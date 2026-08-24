@@ -20,7 +20,11 @@ ma non pusha il ledger, la settimana dopo le riproporrà.
 | File | Ruolo |
 | --- | --- |
 | `state/skills-inviate.csv` | Ledger delle skill già inviate. **Va pushato dopo ogni invio.** |
+| `state/aihero-inviati.csv` | Ledger dei post aihero.dev già inviati. **Fonte oggi bloccata**, vedi sotto. |
+| `state/mattpocock-skills-version.txt` | Ultima release vista di `mattpocock/skills`. |
 | `scripts/pick_skills.py` | Scarica la lista a monte, esclude il ledger, ordina per profilo. |
+| `scripts/track_mp_skills.py` | Diff del CHANGELOG di `mattpocock/skills` rispetto all'ultima vista. |
+| `scripts/check_sources.py` | Sonda tutte le fonti e dice quali sono raggiungibili **adesso**. |
 
 ### Uso
 
@@ -37,6 +41,17 @@ La fonte a monte (`THE_RESOURCES_TABLE_NEW.csv` di awesome-claude-code) si legge
 via `raw.githubusercontent.com`, che restituisce i byte esatti. È importante:
 vedi "Limiti dell'ambiente".
 
+### Esaurimento del pool
+
+Il CSV a monte viene **riscaricato a ogni esecuzione**, quindi le voci che la
+community aggiunge nel tempo entrano da sole nel pool: non c'è niente da
+resettare e il numero di candidate non è fisso.
+
+Quando però non restano candidate pertinenti, la sezione skill **si omette e
+basta**. Non riempirla con voci marginali, non ripescare dal ledger, non
+annunciare l'esaurimento ogni settimana. Se le pertinenti sono 1 o 2, se ne
+mandano 1 o 2. Lo script applica già questa regola e lo dice in output.
+
 ## Watchlist — repo e autori da controllare sempre
 
 La ricerca per keyword su GitHub è inaffidabile per la scoperta: ordina per
@@ -51,12 +66,41 @@ controllata a ogni esecuzione, **a prescindere dal ranking di ricerca**.
 
 Aggiungere qui qualsiasi autore/repo che si voglia non perdere.
 
+## aihero.dev — fonte richiesta, oggi NON attivabile
+
+Comportamento voluto: ogni settimana un brief dei post degli ultimi 7 giorni,
+più 2 articoli più vecchi scelti per mettersi in pari, partendo da **febbraio
+2026** ed evitando roba superata. Ledger: `state/aihero-inviati.csv`.
+
+**È bloccata dalla policy di rete dell'ambiente.** Verificato il 24/08/2026 su
+tre percorsi distinti:
+
+| Percorso | Esito |
+| --- | --- |
+| `curl https://www.aihero.dev/posts` | `CONNECT tunnel failed, 403` |
+| `WebFetch` | `EGRESS_BLOCKED` |
+| `WebSearch` (dominio ristretto) | titoli e URL sì, **date di pubblicazione no** |
+
+WebSearch non è un ripiego sufficiente: entrambe le metà del compito dipendono
+dalle date — "ultimi 7 giorni" e la soglia "da febbraio 2026 in poi". Senza date
+il rischio è esattamente ciò che si vuole evitare, cioè mandare roba vecchia.
+
+**Per attivarla** va aggiunto `www.aihero.dev` ai domini consentiti
+dell'ambiente remoto. `scripts/check_sources.py` se ne accorge da solo e lo
+segnala come "prima bloccata e ora RAGGIUNGIBILE".
+
+Copertura parziale nel frattempo: `scripts/track_mp_skills.py` legge il
+CHANGELOG di `mattpocock/skills`, che è la sostanza dei suoi post "Skills
+Changelog: …". Copre i suoi aggiornamenti, **non** il recupero degli articoli
+vecchi.
+
 ## Limiti dell'ambiente (verificati il 24/08/2026)
 
 1. **`claude.com` è bloccato dal proxy di egress** (`EGRESS_BLOCKED`). Il blog di
    Anthropic non è leggibile in modo diretto: ripiego su `WebSearch`. Per
    risolverlo davvero va aggiunto `claude.com` ai domini consentiti
    dell'ambiente remoto.
+1b. **`www.aihero.dev` è bloccato** allo stesso modo: vedi la sezione sopra.
 2. **`api.github.com` è ristretto allo scope del repo.** Le API GitHub su repo di
    terzi rispondono "access to this repository is not enabled for this session".
    Niente conteggi stelle esatti per repo esterni.

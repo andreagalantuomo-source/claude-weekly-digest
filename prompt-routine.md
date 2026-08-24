@@ -1,7 +1,8 @@
-# Prompt della routine "Claude Code Digest" (v2)
+# Prompt della routine "Claude Code Digest" (v3)
 
 > Da incollare nella configurazione della routine su Claude Code web.
-> Le modifiche rispetto alla v1 sono i **Passo 1b**, **Passo 1c** e **Passo 4**.
+> v2 → v3: aggiunti **Passo 0b** (sonda fonti), **Passo 1d** (aihero.dev /
+> Matt Pocock) e la regola di esaurimento pool nel Passo 1c.
 
 ---
 
@@ -15,6 +16,15 @@ Lavori nel repo `andreagalantuomo-source/claude-weekly-digest`, branch
 `claude/blissful-ptolemy-zkpqg5`. Leggi `ROUTINE.md` prima di iniziare: contiene
 la watchlist e i limiti noti dell'ambiente. Il container è effimero: tutto ciò
 che deve sopravvivere all'esecuzione va committato e pushato.
+
+## Passo 0b — Sonda le fonti
+```bash
+python3 scripts/check_sources.py
+```
+Dice quali fonti sono raggiungibili adesso. Se una fonte attesa risulta
+bloccata, il digest è parziale: dillo in fondo alla mail e nella notifica. Se una
+fonte prima bloccata risulta ora raggiungibile, attiva la sezione corrispondente
+e aggiorna `ROUTINE.md`.
 
 ## Passo 1 — Raccogli
 Consulta con gli strumenti web queste fonti e raccogli tutto ciò che ha data
@@ -73,8 +83,37 @@ git push -u origin claude/blissful-ptolemy-zkpqg5
 Se il push fallisce, dimmelo nella notifica: senza push la memoria è persa e la
 settimana prossima ti riproporrò le stesse skill.
 
-Se le candidate rimaste pertinenti scendono sotto ~12, scrivilo nella mail
-invece di raschiare il fondo: meglio 1 skill buona che 3 riempitive.
+**Esaurimento del pool.** Il CSV viene riscaricato ogni volta, quindi le voci
+che la community aggiunge entrano da sole: il pool non è fisso e non va
+resettato. Se però lo script dice che non restano candidate pertinenti, **ometti
+del tutto la sezione skill**: niente voci marginali, niente ripescaggi dal
+ledger, e non annunciarmi l'esaurimento ogni settimana. Se le pertinenti sono 1
+o 2, mandane 1 o 2.
+
+## Passo 1d — Matt Pocock (aihero.dev)
+Comportamento voluto: brief dei post degli ultimi 7 giorni su
+https://www.aihero.dev/posts, **più** 2 articoli più vecchi scelti per mettermi
+gradualmente in pari — partendo da febbraio 2026 e scartando ciò che è ormai
+superato. Ledger anti-ripetizione: `state/aihero-inviati.csv`.
+
+**Oggi il dominio è bloccato dalla policy di rete dell'ambiente** (vedi
+`ROUTINE.md`). Finché `check_sources.py` lo dà per bloccato: ometti la sezione e
+non provare a ricostruirla da WebSearch — restituisce titoli e URL ma non le
+date, e senza date manderesti proprio quella roba vecchia che voglio evitare.
+
+Quando `check_sources.py` lo dà per raggiungibile, attiva la sezione: leggi
+l'elenco dei post con le date, prendi quelli degli ultimi 7 giorni per il brief,
+poi scegli 2 arretrati (data ≥ 2026-02-01, esclusi quelli già in ledger e quelli
+resi obsoleti da roba più recente), e dopo l'invio registrali nel ledger con
+`Tipo` = `settimanale` o `recupero`, poi commit e push.
+
+Copertura parziale nel frattempo — questa funziona già:
+```bash
+python3 scripts/track_mp_skills.py     # novita' in mattpocock/skills
+```
+Se ci sono release nuove, mettile nel digest (è la stessa sostanza dei suoi post
+"Skills Changelog: …"). Dopo l'invio: `python3 scripts/track_mp_skills.py --record`,
+poi commit e push. Se non c'è nulla di nuovo, ometti la voce.
 
 ## Passo 2 — Filtra sul mio profilo
 Io uso Claude Code in modo intenso su: skill, hook, rules, MCP/connettori,
@@ -84,10 +123,13 @@ riguarda: fix specifici di Windows, GitLab, runner self-hosted, integrazioni
 enterprise che non uso.
 
 ## Passo 3 — Scrivi il digest (in ITALIANO)
-Struttura a sezioni:
+Struttura a sezioni (ometti quelle che non hanno contenuto — meglio una mail
+corta che una con sezioni vuote):
 - **Novità che puoi usare subito** — feature/skill/plugin nuovi
 - **Cambiamenti di comportamento** — modifiche a come funziona qualcosa che già uso
 - **3 skill scelte per te** — le tre del Passo 1c, con perché proprio queste
+- **Dal mondo di Matt Pocock** — Passo 1d: i post della settimana, i 2 arretrati
+  di recupero, e/o le release nuove di `mattpocock/skills`
 - **Altro, in breve** — il resto, in una riga ciascuno
 
 Per OGNI voce, obbligatoriamente:
@@ -101,14 +143,19 @@ Tetto massimo: ~10-12 voci nelle sezioni changelog, PIÙ le 3 skill. Se qualcosa
 
 ## Passo 4 — Se non c'è nulla
 Se negli ultimi 7 giorni non è uscito nulla di rilevante dal changelog, invia
-COMUNQUE la mail con le 3 skill scelte, aprendo con: "Settimana tranquilla:
-nessuna novità rilevante per il tuo uso di Claude Code."
+COMUNQUE la mail con le sezioni che hanno contenuto (skill scelte, Matt Pocock),
+aprendo con: "Settimana tranquilla: nessuna novità rilevante per il tuo uso di
+Claude Code."
+
+Se invece **nessuna** sezione ha contenuto — changelog piatto, pool skill
+esaurito, niente da Matt Pocock — manda solo quella riga, senza sezioni vuote.
 
 ## Passo 5 — Invia
 Invia il digest via email usando il connettore Gmail, a: andreagalapp@gmail.com
 Oggetto: "📬 Claude Code Digest — settimana del [data odierna in formato gg/mm/aaaa]"
 Corpo: il digest formattato in modo leggibile (HTML con fallback testo).
 
-Poi esegui il `--record` + commit + push del Passo 1c.
+Poi esegui i `--record` + commit + push dei Passi 1c e 1d. Senza push la memoria
+della routine è perduta e la settimana dopo ti ripropongo le stesse cose.
 
 Non chiedermi conferme: esegui tutto in autonomia e invia.

@@ -15,8 +15,13 @@ import argparse
 import csv
 import io
 import os
+import signal
 import sys
 import urllib.request
+
+# L'output finisce spesso in `| head`: senza questo Python rumoreggia con un
+# BrokenPipeError quando head chiude la pipe.
+signal.signal(signal.SIGPIPE, signal.SIG_DFL)
 
 CSV_URL = (
     "https://raw.githubusercontent.com/hesreallyhim/awesome-claude-code/"
@@ -122,8 +127,20 @@ def main():
 
     print(f"Voci a monte: {len(rows)} | gia' inviate: {len(ledger)} | "
           f"candidate disponibili: {len(pool)}")
-    if len(pool) < 12:
-        print("!! POOL QUASI ESAURITO: segnalalo nella mail invece di raschiare il fondo.")
+
+    # La lista a monte cresce: il CSV viene riscaricato a ogni esecuzione, quindi
+    # un pool esaurito oggi puo' ripopolarsi da solo quando la community aggiunge
+    # voci nuove. Non c'e' niente da "resettare".
+    worth = [r for r in pool if score(r) > 0]
+    if not worth:
+        print("\nPOOL ESAURITO: nessuna candidata ancora pertinente.")
+        print("NON inserire la sezione skill nella mail. Non riempirla con voci")
+        print("marginali e non ripescare dal ledger. Torneranno quando la lista")
+        print("a monte crescera'.")
+        return
+    if len(worth) < 3:
+        print(f"\nATTENZIONE: solo {len(worth)} candidate pertinenti. Mandane "
+              f"{len(worth)} invece di tre: meglio poche buone che tre riempitive.")
 
     ranked = pool if args.all else sorted(pool, key=score, reverse=True)
     for r in ranked[: args.top]:
