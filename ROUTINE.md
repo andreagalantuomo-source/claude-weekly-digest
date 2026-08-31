@@ -132,10 +132,17 @@ release. Vedi sotto come leggerli.
    stars" e "234.5k stars" per repo che non li hanno). **Non citare mai un
    conteggio stelle preso da `WebFetch`.** Prenderli da `search_repositories`
    (campo `stargazers_count`), che viene dall'API vera.
-5. **Le pagine `whats-new/AAAA-wNN` esistono solo a settimana conclusa.** Il
-   24/08/2026 (lunedì, ISO week 35) `2026-w35` dava 404 e la pagina buona era
-   `2026-w34`. Calcolare la settimana ISO e, se la corrente dà 404, usare la
-   precedente.
+5. **Le pagine `whats-new/AAAA-wNN` escono in ritardo, e non solo di un giorno.**
+   Il 24/08/2026 (lunedì, ISO week 35) `2026-w35` dava 404 e la pagina buona era
+   `2026-w34`. Il 31/08/2026 (lunedì, ISO week 36) `2026-w35` dava **ancora** 404,
+   pur essendo la settimana conclusa da giorni: l'indice si fermava anch'esso alla
+   week 34. Quindi non basta scalare di una settimana.
+   **Procedura**: leggere l'indice `https://code.claude.com/docs/en/whats-new` e
+   prendere la settimana più recente che l'indice stesso elenca. Se è già stata
+   coperta nel digest precedente, la fonte non contribuisce: dirlo in fondo alla
+   mail e ricavare la sostanza dal changelog grezzo.
+   Nota: `check_sources.py` sonda l'indice, non la pagina della settimana, quindi
+   un "OK" su questa fonte **non** garantisce che la pagina settimanale esista.
 
 ## Prompt della routine
 

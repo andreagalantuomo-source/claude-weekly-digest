@@ -2,3 +2,6 @@ ID,Display Name,Link,Category,Data Invio,Note
 lint-2c3c60c2,agnix,https://github.com/agent-sh/agnix,Linting,2026-08-24,
 security-e30f8dee,SkillSpector,https://github.com/NVIDIA/SkillSpector,Security,2026-08-24,
 75404630,Claude Code Infrastructure Showcase,https://github.com/diet103/claude-code-infrastructure-showcase,Skills,2026-08-24,
+memory-a25b0476,Hivemind,https://github.com/activeloopai/hivemind,Memory & Context Persistence,2026-08-31,
+memory-325fcf97,presence,https://github.com/sara-star-quant/presence,Memory & Context Persistence,2026-08-31,
+security-bc3be5ba,compass,https://github.com/dshakes/compass,Security,2026-08-31,
