@@ -72,8 +72,9 @@ Comportamento voluto: ogni settimana un brief dei post degli ultimi 7 giorni,
 più 2 articoli più vecchi scelti per mettersi in pari, partendo da **febbraio
 2026** ed evitando roba superata. Ledger: `state/aihero-inviati.csv`.
 
-**Il dominio è tornato raggiungibile** (verificato il 24/08/2026). Ma il percorso
-per leggerlo è uno solo:
+**Il dominio è tornato raggiungibile** (verificato il 24/08/2026, riconfermato il
+07/09/2026: prima esecuzione in cui la sezione è stata effettivamente prodotta).
+Ma il percorso per leggerlo è uno solo:
 
 | Percorso | Esito |
 | --- | --- |
@@ -101,7 +102,16 @@ for m in re.finditer(r'"published_at_timestamp":(\d+)', h):
 ```
 
 URL di un post: `https://www.aihero.dev/<slug>`. I `type` `workshop` **non** sono
-post: vivono sotto `/workshops/<slug>` e la URL piatta dà 404.
+post: vivono sotto `/workshops/<slug>` e la URL piatta dà 404. Gli altri `type`
+(`article`, `skill`, `topic`, `skill-changelog`, `list`) usano la URL piatta.
+
+Il TLS verso `www.aihero.dev` va **a intermittenza**: la stessa URL può dare
+`handshake operation timed out` e poi HTTP 200 al tentativo dopo. Prevedere 2-3
+retry con una pausa, non concludere che il dominio è bloccato al primo errore.
+
+La cadenza di pubblicazione è irregolare: il 07/09/2026 l'ultimo post era del
+17/08 (e per giunta un `workshop`). Una settimana senza post nella finestra è
+normale — in quel caso si mandano solo i 2 arretrati di recupero.
 
 Copertura complementare: `scripts/track_mp_skills.py` legge il CHANGELOG di
 `mattpocock/skills`. Attenzione: le release non escono ogni settimana (1.2.3 è
@@ -132,11 +142,35 @@ release. Vedi sotto come leggerli.
    stars" e "234.5k stars" per repo che non li hanno). **Non citare mai un
    conteggio stelle preso da `WebFetch`.** Prenderli da `search_repositories`
    (campo `stargazers_count`), che viene dall'API vera.
-5. **Le pagine `whats-new/AAAA-wNN` escono in ritardo, e non solo di un giorno.**
+5. **Il `CHANGELOG.md` grezzo non ha date, la pagina docs sì.**
+   `raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md` elenca le
+   versioni ma non quando sono uscite: da solo non permette di applicare la
+   finestra di 7 giorni. Le date stanno nella pagina docs, presa con `urllib`:
+   ogni release è un blocco che si apre con `<div class="update flex flex-col
+   relative`, con la versione in `data-component-part="update-label"` e la data
+   (`September 4, 2026`) in `data-component-part="update-description"`.
+
+   ```python
+   blocks = re.split(r'<div class="update flex flex-col relative', html)
+   # per ogni blocco: update-label -> versione, update-description -> data,
+   # poi da html.find('data-component-part="update-content"') in poi, i <li>
+   ```
+
+   Attenzione: la regex "chiusa" sul div di `update-content` **non matcha** (ci
+   sono div annidati). Prendere dal `find` fino a fine blocco e raccogliere i
+   `<li>`, altrimenti si ottengono zero voci senza errore.
+
+   Le ancore `#2-1-261` funzionano: usarle per linkare la singola release.
+
+6. **Le pagine `whats-new/AAAA-wNN` escono in ritardo, e non solo di un giorno.**
    Il 24/08/2026 (lunedì, ISO week 35) `2026-w35` dava 404 e la pagina buona era
    `2026-w34`. Il 31/08/2026 (lunedì, ISO week 36) `2026-w35` dava **ancora** 404,
    pur essendo la settimana conclusa da giorni: l'indice si fermava anch'esso alla
    week 34. Quindi non basta scalare di una settimana.
+   Il 07/09/2026 (ISO week 37) l'indice era **ancora fermo a `2026-w34`**: tre
+   settimane di ritardo, e la fonte non ha contribuito per la terza esecuzione
+   consecutiva. A questo punto va considerata strutturalmente inaffidabile —
+   controllarla, ma non aspettarsi che porti contenuto.
    **Procedura**: leggere l'indice `https://code.claude.com/docs/en/whats-new` e
    prendere la settimana più recente che l'indice stesso elenca. Se è già stata
    coperta nel digest precedente, la fonte non contribuisce: dirlo in fondo alla

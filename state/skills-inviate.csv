@@ -5,3 +5,6 @@ security-e30f8dee,SkillSpector,https://github.com/NVIDIA/SkillSpector,Security,2
 memory-a25b0476,Hivemind,https://github.com/activeloopai/hivemind,Memory & Context Persistence,2026-08-31,
 memory-325fcf97,presence,https://github.com/sara-star-quant/presence,Memory & Context Persistence,2026-08-31,
 security-bc3be5ba,compass,https://github.com/dshakes/compass,Security,2026-08-31,
+memory-9f34567a,Selvedge,https://github.com/masondelan/selvedge,Memory & Context Persistence,2026-09-07,
+orchestration-10fbc619,Agent Collab Skills,https://github.com/WenyuChiou/agent-collab-skills,Agent Orchestration,2026-09-07,
+f5f5601a,claude-context-optimizer,https://github.com/egorfedorov/claude-context-optimizer,Memory & Context Persistence,2026-09-07,
