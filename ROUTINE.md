@@ -26,6 +26,12 @@ ma non pusha il ledger, la settimana dopo le riproporrà.
 | `scripts/track_mp_skills.py` | Diff del CHANGELOG di `mattpocock/skills` rispetto all'ultima vista. |
 | `scripts/check_sources.py` | Sonda tutte le fonti e dice quali sono raggiungibili **adesso**. |
 
+Nota su `check_sources.py`: ogni fonte ha nella tabella `SOURCES` un flag
+`expected` che è la **baseline documentata qui**. Dal 14/09/2026 tutte e sei
+sono a `True`, perché tutte risultano raggiungibili. Quando una fonte cambia
+stato in modo stabile, va aggiornato anche quel flag: altrimenti lo script
+annuncia ogni settimana un "ora raggiungibile" che non è una novità.
+
 ### Uso
 
 ```bash
@@ -73,7 +79,8 @@ più 2 articoli più vecchi scelti per mettersi in pari, partendo da **febbraio
 2026** ed evitando roba superata. Ledger: `state/aihero-inviati.csv`.
 
 **Il dominio è tornato raggiungibile** (verificato il 24/08/2026, riconfermato il
-07/09/2026: prima esecuzione in cui la sezione è stata effettivamente prodotta).
+07/09/2026 — prima esecuzione in cui la sezione è stata effettivamente prodotta —
+e il 14/09/2026).
 Ma il percorso per leggerlo è uno solo:
 
 | Percorso | Esito |
@@ -110,8 +117,9 @@ Il TLS verso `www.aihero.dev` va **a intermittenza**: la stessa URL può dare
 retry con una pausa, non concludere che il dominio è bloccato al primo errore.
 
 La cadenza di pubblicazione è irregolare: il 07/09/2026 l'ultimo post era del
-17/08 (e per giunta un `workshop`). Una settimana senza post nella finestra è
-normale — in quel caso si mandano solo i 2 arretrati di recupero.
+17/08 (e per giunta un `workshop`), e il 14/09/2026 era **ancora** quello. Una
+settimana senza post nella finestra è normale — in quel caso si mandano solo i 2
+arretrati di recupero, dicendo in chiaro che non è un blocco ma la cadenza.
 
 Copertura complementare: `scripts/track_mp_skills.py` legge il CHANGELOG di
 `mattpocock/skills`. Attenzione: le release non escono ogni settimana (1.2.3 è
@@ -169,8 +177,10 @@ release. Vedi sotto come leggerli.
    week 34. Quindi non basta scalare di una settimana.
    Il 07/09/2026 (ISO week 37) l'indice era **ancora fermo a `2026-w34`**: tre
    settimane di ritardo, e la fonte non ha contribuito per la terza esecuzione
-   consecutiva. A questo punto va considerata strutturalmente inaffidabile —
-   controllarla, ma non aspettarsi che porti contenuto.
+   consecutiva. Il 14/09/2026 (ISO week 38) l'indice era **sempre a `2026-w34`**:
+   quarta esecuzione consecutiva senza contributo, e il ritardo cresce di una
+   settimana a ogni giro. A questo punto va considerata strutturalmente
+   inaffidabile — controllarla, ma non aspettarsi che porti contenuto.
    **Procedura**: leggere l'indice `https://code.claude.com/docs/en/whats-new` e
    prendere la settimana più recente che l'indice stesso elenca. Se è già stata
    coperta nel digest precedente, la fonte non contribuisce: dirlo in fondo alla

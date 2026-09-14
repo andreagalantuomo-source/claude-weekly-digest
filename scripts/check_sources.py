@@ -16,13 +16,13 @@ import urllib.request
 SOURCES = [
     ("changelog Claude Code", "https://code.claude.com/docs/en/changelog", True),
     ("what's new (settimana)", "https://code.claude.com/docs/en/whats-new", True),
-    ("blog Anthropic", "https://claude.com/blog", False),
+    ("blog Anthropic", "https://claude.com/blog", True),
     ("awesome-claude-code (CSV)",
      "https://raw.githubusercontent.com/hesreallyhim/awesome-claude-code/"
      "main/THE_RESOURCES_TABLE_NEW.csv", True),
     ("mattpocock/skills (CHANGELOG)",
      "https://raw.githubusercontent.com/mattpocock/skills/main/CHANGELOG.md", True),
-    ("aihero.dev (post di Matt Pocock)", "https://www.aihero.dev/posts", False),
+    ("aihero.dev (post di Matt Pocock)", "https://www.aihero.dev/posts", True),
 ]
 
 

@@ -8,3 +8,6 @@ security-bc3be5ba,compass,https://github.com/dshakes/compass,Security,2026-08-31
 memory-9f34567a,Selvedge,https://github.com/masondelan/selvedge,Memory & Context Persistence,2026-09-07,
 orchestration-10fbc619,Agent Collab Skills,https://github.com/WenyuChiou/agent-collab-skills,Agent Orchestration,2026-09-07,
 f5f5601a,claude-context-optimizer,https://github.com/egorfedorov/claude-context-optimizer,Memory & Context Persistence,2026-09-07,
+21b5e85c,claude-code-tools,https://github.com/pchalasani/claude-code-tools,Multi-Purpose,2026-09-14,
+2c02823f,Compound Engineering Plugin,https://github.com/EveryInc/compound-engineering-plugin,Agent Orchestration,2026-09-14,
+obs-9bb175c8,agents-observe,https://github.com/simple10/agents-observe,Observability & Monitoring,2026-09-14,
