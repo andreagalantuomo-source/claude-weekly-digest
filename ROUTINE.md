@@ -20,7 +20,7 @@ ma non pusha il ledger, la settimana dopo le riproporrà.
 | File | Ruolo |
 | --- | --- |
 | `state/skills-inviate.csv` | Ledger delle skill già inviate. **Va pushato dopo ogni invio.** |
-| `state/aihero-inviati.csv` | Ledger dei post aihero.dev già inviati. **Fonte oggi bloccata**, vedi sotto. |
+| `state/aihero-inviati.csv` | Ledger dei post aihero.dev già inviati. Fonte **attiva**, vedi sotto. |
 | `state/mattpocock-skills-version.txt` | Ultima release vista di `mattpocock/skills`. |
 | `scripts/pick_skills.py` | Scarica la lista a monte, esclude il ledger, ordina per profilo. |
 | `scripts/track_mp_skills.py` | Diff del CHANGELOG di `mattpocock/skills` rispetto all'ultima vista. |
@@ -117,14 +117,26 @@ Il TLS verso `www.aihero.dev` va **a intermittenza**: la stessa URL può dare
 retry con una pausa, non concludere che il dominio è bloccato al primo errore.
 
 La cadenza di pubblicazione è irregolare: il 07/09/2026 l'ultimo post era del
-17/08 (e per giunta un `workshop`), e il 14/09/2026 era **ancora** quello. Una
-settimana senza post nella finestra è normale — in quel caso si mandano solo i 2
-arretrati di recupero, dicendo in chiaro che non è un blocco ma la cadenza.
+17/08 (e per giunta un `workshop`), il 14/09/2026 era **ancora** quello, e il
+21/09/2026 **pure**: cinque settimane senza un post nuovo. Una settimana senza
+post nella finestra è normale — in quel caso si mandano solo i 2 arretrati di
+recupero, dicendo in chiaro che non è un blocco ma la cadenza.
+
+Attenzione sulle URL dei `skill-changelog`: non tutti usano la URL piatta. Il
+21/09/2026 `skills-changelog-v12-wait-what-writing-for-agents-claude-code-plugin-and-more`
+dava **404** su `https://www.aihero.dev/<slug>` su cinque tentativi, mentre i
+`skill` normali (`skills-wayfinder`, `skills-research`) rispondevano 200. Quindi:
+**verificare sempre la URL con una GET prima di mettere un arretrato in mail**,
+e se da' 404 scegliere un altro candidato invece di spedire un link rotto.
 
 Copertura complementare: `scripts/track_mp_skills.py` legge il CHANGELOG di
 `mattpocock/skills`. Attenzione: le release non escono ogni settimana (1.2.3 è
-del 06/08), quindi spesso la novità della finestra sta nei **commit**, non nella
-release. Vedi sotto come leggerli.
+del 06/08 e al 21/09/2026 è **ancora** l'ultima), quindi quasi sempre la novità
+della finestra sta nei **commit**, non nella release: al 21/09 lo script diceva
+"nessuna novità" mentre nella finestra erano nate la skill `/pr` e una revisione
+sostanziale di `retro`. Regola pratica: se lo script non riporta nulla, **fare
+comunque** `search_commits` con `repo:mattpocock/skills committer-date:>AAAA-MM-GG`
+prima di concludere che non c'è niente da dire.
 
 ## Limiti dell'ambiente (verificati il 24/08/2026)
 
@@ -133,6 +145,20 @@ release. Vedi sotto come leggerli.
    sui singoli post. L'indice `https://claude.com/blog` va preso con `urllib` e
    parsato: le date sono in chiaro nel formato `August 20, 2026`, vicine
    all'`href` del post.
+
+   **Ma le date dell'indice non sono affidabili, e nemmeno quelle di `WebFetch`.**
+   Verificato il 21/09/2026: associare a un `href` la data più vicina nell'HTML
+   dell'indice ha datato `artifacts-in-claude-code` al 15/09 (vera: 18/06),
+   `claude-managed-agents-memory` al 16/09 (vera: 23/04) e
+   `connectors-for-everyday-life` al 16/09 (vera: 23/04) — le card dell'indice
+   non hanno una data ciascuna, quindi la prossimità pesca quella di un'altra.
+   `WebFetch` sul singolo post restituisce una data ma la sbaglia altrettanto
+   spesso (stesso riassuntore del problema GitHub, punto 4).
+
+   **Procedura**: usare l'indice solo per scoprire gli slug, poi per ognuno fare
+   una GET con `urllib` su `https://claude.com/blog/<slug>` e prendere la data
+   dal testo della pagina (`Month D, YYYY`). Solo quella regge la finestra di 7
+   giorni. Il 21/09 su 10 candidati dell'indice ne sono sopravvissuti 3.
 2. **`api.github.com` è ristretto allo scope del repo** per i tool che leggono un
    repo specifico (`list_releases`, `get_file_contents`, …): su repo di terzi
    rispondono "access to this repository is not enabled for this session".
@@ -179,8 +205,15 @@ release. Vedi sotto come leggerli.
    settimane di ritardo, e la fonte non ha contribuito per la terza esecuzione
    consecutiva. Il 14/09/2026 (ISO week 38) l'indice era **sempre a `2026-w34`**:
    quarta esecuzione consecutiva senza contributo, e il ritardo cresce di una
-   settimana a ogni giro. A questo punto va considerata strutturalmente
-   inaffidabile — controllarla, ma non aspettarsi che porti contenuto.
+   settimana a ogni giro.
+   Il 21/09/2026 (ISO week 39) l'indice si e' **sbloccato**: elenca fino a
+   `2026-w37` (recuperando in un colpo w35, w36 e w37 — nota che `2026-w31` resta
+   mancante). Ma il ritardo strutturale non e' sparito: `2026-w38`, cioe' la
+   settimana effettivamente coperta dal digest, dava **404**. Quinta esecuzione
+   consecutiva senza contributo.
+   Morale invariata: la pagina della settimana corrente non c'e' quasi mai.
+   Controllarla, ma ricavare la sostanza dal changelog grezzo, che e' completo e
+   datato.
    **Procedura**: leggere l'indice `https://code.claude.com/docs/en/whats-new` e
    prendere la settimana più recente che l'indice stesso elenca. Se è già stata
    coperta nel digest precedente, la fonte non contribuisce: dirlo in fondo alla
