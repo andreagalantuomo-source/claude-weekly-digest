@@ -28,7 +28,8 @@ ma non pusha il ledger, la settimana dopo le riproporrà.
 
 Nota su `check_sources.py`: ogni fonte ha nella tabella `SOURCES` un flag
 `expected` che è la **baseline documentata qui**. Dal 14/09/2026 tutte e sei
-sono a `True`, perché tutte risultano raggiungibili. Quando una fonte cambia
+sono a `True`, perché tutte risultano raggiungibili (riconfermato il 28/09/2026:
+sei OK su sei, nessuna sorpresa). Quando una fonte cambia
 stato in modo stabile, va aggiornato anche quel flag: altrimenti lo script
 annuncia ogni settimana un "ora raggiungibile" che non è una novità.
 
@@ -118,9 +119,12 @@ retry con una pausa, non concludere che il dominio è bloccato al primo errore.
 
 La cadenza di pubblicazione è irregolare: il 07/09/2026 l'ultimo post era del
 17/08 (e per giunta un `workshop`), il 14/09/2026 era **ancora** quello, e il
-21/09/2026 **pure**: cinque settimane senza un post nuovo. Una settimana senza
-post nella finestra è normale — in quel caso si mandano solo i 2 arretrati di
-recupero, dicendo in chiaro che non è un blocco ma la cadenza.
+21/09/2026 **pure**, e il 28/09/2026 **ancora**: sei settimane senza un post
+nuovo. A questo punto l'assenza di post nella finestra è il caso *normale*, non
+l'eccezione — si mandano solo i 2 arretrati di recupero, dicendo in chiaro che
+non è un blocco ma la cadenza. Il pool di arretrati pertinenti (data ≥ 2026-02-01,
+fuori ledger, URL verificata 200) al 28/09/2026 conta ancora una quindicina di
+voci, quasi tutte del blocco `skill` del 06-08/07/2026.
 
 Attenzione sulle URL dei `skill-changelog`: non tutti usano la URL piatta. Il
 21/09/2026 `skills-changelog-v12-wait-what-writing-for-agents-claude-code-plugin-and-more`
@@ -136,7 +140,9 @@ della finestra sta nei **commit**, non nella release: al 21/09 lo script diceva
 "nessuna novità" mentre nella finestra erano nate la skill `/pr` e una revisione
 sostanziale di `retro`. Regola pratica: se lo script non riporta nulla, **fare
 comunque** `search_commits` con `repo:mattpocock/skills committer-date:>AAAA-MM-GG`
-prima di concludere che non c'è niente da dire.
+prima di concludere che non c'è niente da dire. Il 28/09/2026 il doppio
+controllo è stato negativo da entrambe le parti (1.2.3 ancora l'ultima,
+`total_count: 0` sui commit dal 21/09): in quel caso la voce si omette davvero.
 
 ## Limiti dell'ambiente (verificati il 24/08/2026)
 
@@ -210,6 +216,10 @@ prima di concludere che non c'è niente da dire.
    `2026-w37` (recuperando in un colpo w35, w36 e w37 — nota che `2026-w31` resta
    mancante). Ma il ritardo strutturale non e' sparito: `2026-w38`, cioe' la
    settimana effettivamente coperta dal digest, dava **404**. Quinta esecuzione
+   consecutiva senza contributo.
+   Il 28/09/2026 (ISO week 40) l'indice era **di nuovo fermo a `2026-w37`**: lo
+   sblocco della settimana prima non e' diventato una cadenza. `2026-w39` (la
+   settimana coperta) e `2026-w40` davano entrambe 404. Sesta esecuzione
    consecutiva senza contributo.
    Morale invariata: la pagina della settimana corrente non c'e' quasi mai.
    Controllarla, ma ricavare la sostanza dal changelog grezzo, che e' completo e
