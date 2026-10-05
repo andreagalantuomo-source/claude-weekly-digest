@@ -28,8 +28,8 @@ ma non pusha il ledger, la settimana dopo le riproporrà.
 
 Nota su `check_sources.py`: ogni fonte ha nella tabella `SOURCES` un flag
 `expected` che è la **baseline documentata qui**. Dal 14/09/2026 tutte e sei
-sono a `True`, perché tutte risultano raggiungibili (riconfermato il 28/09/2026:
-sei OK su sei, nessuna sorpresa). Quando una fonte cambia
+sono a `True`, perché tutte risultano raggiungibili (riconfermato il 28/09/2026 e
+il 05/10/2026: sei OK su sei, nessuna sorpresa). Quando una fonte cambia
 stato in modo stabile, va aggiornato anche quel flag: altrimenti lo script
 annuncia ogni settimana un "ora raggiungibile" che non è una novità.
 
@@ -119,12 +119,16 @@ retry con una pausa, non concludere che il dominio è bloccato al primo errore.
 
 La cadenza di pubblicazione è irregolare: il 07/09/2026 l'ultimo post era del
 17/08 (e per giunta un `workshop`), il 14/09/2026 era **ancora** quello, e il
-21/09/2026 **pure**, e il 28/09/2026 **ancora**: sei settimane senza un post
+21/09/2026 **pure**, il 28/09/2026 **ancora**, e il 05/10/2026 **sempre**: sette
+settimane senza un post
 nuovo. A questo punto l'assenza di post nella finestra è il caso *normale*, non
 l'eccezione — si mandano solo i 2 arretrati di recupero, dicendo in chiaro che
 non è un blocco ma la cadenza. Il pool di arretrati pertinenti (data ≥ 2026-02-01,
-fuori ledger, URL verificata 200) al 28/09/2026 conta ancora una quindicina di
-voci, quasi tutte del blocco `skill` del 06-08/07/2026.
+fuori ledger, URL verificata 200) al 05/10/2026 conta ancora una dozzina di
+voci, quasi tutte del blocco `skill` del 06-08/07/2026. L'elenco totale letto da
+`/posts` è stabile a 37 voci: il pool si consuma solo per sottrazione del ledger
+(14 voci dopo il 05/10), quindi fra circa sei esecuzioni va previsto
+l'esaurimento, a cadenza invariata.
 
 Attenzione sulle URL dei `skill-changelog`: non tutti usano la URL piatta. Il
 21/09/2026 `skills-changelog-v12-wait-what-writing-for-agents-claude-code-plugin-and-more`
@@ -135,7 +139,7 @@ e se da' 404 scegliere un altro candidato invece di spedire un link rotto.
 
 Copertura complementare: `scripts/track_mp_skills.py` legge il CHANGELOG di
 `mattpocock/skills`. Attenzione: le release non escono ogni settimana (1.2.3 è
-del 06/08 e al 21/09/2026 è **ancora** l'ultima), quindi quasi sempre la novità
+del 06/08 e al 28/09/2026 era **ancora** l'ultima), quindi spesso la novità
 della finestra sta nei **commit**, non nella release: al 21/09 lo script diceva
 "nessuna novità" mentre nella finestra erano nate la skill `/pr` e una revisione
 sostanziale di `retro`. Regola pratica: se lo script non riporta nulla, **fare
@@ -144,7 +148,48 @@ prima di concludere che non c'è niente da dire. Il 28/09/2026 il doppio
 controllo è stato negativo da entrambe le parti (1.2.3 ancora l'ultima,
 `total_count: 0` sui commit dal 21/09): in quel caso la voce si omette davvero.
 
+Il 05/10/2026 invece lo script ha fatto da solo tutto il lavoro: **1.3.0 e 1.3.1**
+(il salto da 1.2.3 arriva in blocco) promuovono `implement-spec`, `pr` e `retro`
+nel bucket *Engineering* — cioè proprio le skill che il 21/09 si vedevano solo nei
+commit. Conferma la regola: i commit anticipano la release di qualche settimana,
+quindi quando la release arriva la sostanza può essere già stata mandata. Vale
+confrontare con quanto riportato nelle settimane precedenti per non ripetersi.
+Versione vista ora: **1.3.1**.
+
+## Prima di tutto: il branch con cui parte il container
+
+**Verificato il 05/10/2026 — leggere prima di concludere che il repo è vuoto.**
+
+Il container della routine **non** parte necessariamente sul branch che contiene
+lo stato. Il 05/10/2026 la sessione è partita con un working tree su
+`claude/sleepy-curie-m3ubhp` che conteneva **solo `README.md`**: niente
+`ROUTINE.md`, niente `scripts/`, niente `state/`. Il clone iniziale aveva fetchato
+solo `main` e quel branch, e nessuno dei due ha lo scaffolding.
+
+Non è una perdita di memoria: lo stato è tutto su `claude/blissful-ptolemy-zkpqg5`,
+che semplicemente non era stato fetchato. La contromisura, come primo passo
+assoluto:
+
+```bash
+git fetch origin claude/blissful-ptolemy-zkpqg5
+git checkout -B claude/blissful-ptolemy-zkpqg5 origin/claude/blissful-ptolemy-zkpqg5
+```
+
+`mcp__github__list_branches` sul repo elenca i branch veri e serve per
+riconoscere la situazione. **Non ricostruire lo scaffolding da zero** e **non
+pushare lo stato su un branch diverso**: forkerebbe la memoria e la settimana
+dopo la routine riproporrebbe le stesse skill, che è esattamente il guasto che
+questo repo esiste per prevenire.
+
 ## Limiti dell'ambiente (verificati il 24/08/2026)
+
+0. **La classificazione di sicurezza di auto mode può andare in timeout** e
+   bloccare temporaneamente il tool Bash (`claude-sonnet-5[1m] is temporarily
+   unavailable`). Capitato più volte il 05/10/2026. I tool di sola lettura e
+   `Read`/`Edit`/`Write` continuano a funzionare: conviene proseguire con quelli
+   e riprovare Bash dopo qualche chiamata, invece di fermarsi. Gli script Python
+   però girano **solo** da Bash, quindi i passi 0b/1c/1d e il push vanno
+   semplicemente ritentati.
 
 1. **`claude.com` è di nuovo raggiungibile.** Il blog di Anthropic si legge
    direttamente, non serve più il ripiego su `WebSearch`. `WebFetch` funziona
@@ -221,6 +266,15 @@ controllo è stato negativo da entrambe le parti (1.2.3 ancora l'ultima,
    sblocco della settimana prima non e' diventato una cadenza. `2026-w39` (la
    settimana coperta) e `2026-w40` davano entrambe 404. Sesta esecuzione
    consecutiva senza contributo.
+   Il 05/10/2026 (ISO week 41) l'indice era **ancora fermo a `2026-w37`**, con
+   `2026-w39`, `2026-w40` e `2026-w41` tutte a 404. Settima esecuzione
+   consecutiva senza contributo, e il ritardo e' tornato a crescere di una
+   settimana a ogni giro. L'indice completo elencato: w29, w30, w32, w33, w34,
+   w35, w36, w37 (restano mancanti w31 e tutto da w38 in avanti).
+   A questo punto il trattamento ragionevole e' considerare questa fonte
+   **strutturalmente non contribuente** e non spenderci piu' di una sonda:
+   controllarla in un colpo, annotarlo in fondo alla mail, e prendere tutta la
+   sostanza dal changelog grezzo.
    Morale invariata: la pagina della settimana corrente non c'e' quasi mai.
    Controllarla, ma ricavare la sostanza dal changelog grezzo, che e' completo e
    datato.
