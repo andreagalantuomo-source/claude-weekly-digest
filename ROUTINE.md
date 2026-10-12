@@ -28,8 +28,14 @@ ma non pusha il ledger, la settimana dopo le riproporrà.
 
 Nota su `check_sources.py`: ogni fonte ha nella tabella `SOURCES` un flag
 `expected` che è la **baseline documentata qui**. Dal 14/09/2026 tutte e sei
-sono a `True`, perché tutte risultano raggiungibili (riconfermato il 28/09/2026 e
-il 05/10/2026: sei OK su sei, nessuna sorpresa). Quando una fonte cambia
+sono a `True`, perché tutte risultano raggiungibili (riconfermato il 28/09/2026,
+il 05/10/2026 e il 12/10/2026: sei OK su sei, nessuna sorpresa).
+
+**Attenzione al falso OK sul blog (12/10/2026).** La sonda del blog interroga
+`https://claude.com/blog`, che risponde 200 e continua a servire l'indice, ma i
+**post** si sono spostati su `claude.dev`: `claude.com/blog/<slug>` ora da' 404 e
+`claude.dev` e' bloccato dalla policy di rete. Quindi "blog OK" non significa piu'
+"post leggibili": vedi il punto 1 dei limiti dell'ambiente. Quando una fonte cambia
 stato in modo stabile, va aggiornato anche quel flag: altrimenti lo script
 annuncia ogni settimana un "ora raggiungibile" che non è una novità.
 
@@ -119,16 +125,18 @@ retry con una pausa, non concludere che il dominio è bloccato al primo errore.
 
 La cadenza di pubblicazione è irregolare: il 07/09/2026 l'ultimo post era del
 17/08 (e per giunta un `workshop`), il 14/09/2026 era **ancora** quello, e il
-21/09/2026 **pure**, il 28/09/2026 **ancora**, e il 05/10/2026 **sempre**: sette
-settimane senza un post
+21/09/2026 **pure**, il 28/09/2026 **ancora**, il 05/10/2026 **sempre** e il
+12/10/2026 **di nuovo**: otto settimane senza un post
 nuovo. A questo punto l'assenza di post nella finestra è il caso *normale*, non
 l'eccezione — si mandano solo i 2 arretrati di recupero, dicendo in chiaro che
 non è un blocco ma la cadenza. Il pool di arretrati pertinenti (data ≥ 2026-02-01,
 fuori ledger, URL verificata 200) al 05/10/2026 conta ancora una dozzina di
 voci, quasi tutte del blocco `skill` del 06-08/07/2026. L'elenco totale letto da
 `/posts` è stabile a 37 voci: il pool si consuma solo per sottrazione del ledger
-(14 voci dopo il 05/10), quindi fra circa sei esecuzioni va previsto
-l'esaurimento, a cadenza invariata.
+(16 voci dopo il 12/10), quindi fra circa cinque esecuzioni va previsto
+l'esaurimento, a cadenza invariata. Il 12/10/2026 undici candidati arretrati sono
+stati verificati con una GET: **tutti 200**, quindi il problema dei `skill-changelog`
+che danno 404 resta circoscritto a quelle voci.
 
 Attenzione sulle URL dei `skill-changelog`: non tutti usano la URL piatta. Il
 21/09/2026 `skills-changelog-v12-wait-what-writing-for-agents-claude-code-plugin-and-more`
@@ -156,9 +164,21 @@ quindi quando la release arriva la sostanza può essere già stata mandata. Vale
 confrontare con quanto riportato nelle settimane precedenti per non ripetersi.
 Versione vista ora: **1.3.1**.
 
+Il 12/10/2026 la regola del doppio controllo ha pagato di nuovo, in senso opposto:
+`track_mp_skills.py` diceva "nessuna novita'" (ancora 1.3.1), ma `search_commits`
+con `repo:mattpocock/skills committer-date:>2026-10-05` restituiva **41 commit** in
+finestra, con sostanza vera: fix a `teach` (scriveva i corsi dentro
+`~/.claude/skills`), `wayfinder`, `diagnosing-bugs`, `code-review`, `tdd`, `retro`,
+`ask-matt`, `implement`, `wizard`, il README che passa all'install auto-aggiornante
+dal marketplace `claude-plugins-official`, e una skill nuova in cantiere
+(`chief-of-staff`). **Non fidarsi mai del solo script per questo repo.**
+
 ## Prima di tutto: il branch con cui parte il container
 
-**Verificato il 05/10/2026 — leggere prima di concludere che il repo è vuoto.**
+**Verificato il 05/10/2026, riconfermato il 12/10/2026 — leggere prima di concludere
+che il repo è vuoto.** Il 12/10 il container è partito su
+`claude/sleepy-curie-u9hdup`, di nuovo con solo `README.md`: stessa situazione,
+stessa contromisura, e lo stato era intatto su `claude/blissful-ptolemy-zkpqg5`.
 
 Il container della routine **non** parte necessariamente sul branch che contiene
 lo stato. Il 05/10/2026 la sessione è partita con un working tree su
@@ -191,8 +211,26 @@ questo repo esiste per prevenire.
    però girano **solo** da Bash, quindi i passi 0b/1c/1d e il push vanno
    semplicemente ritentati.
 
-1. **`claude.com` è di nuovo raggiungibile.** Il blog di Anthropic si legge
-   direttamente, non serve più il ripiego su `WebSearch`. `WebFetch` funziona
+1. **Il blog si e' spostato su `claude.dev`, che e' BLOCCATO (12/10/2026).**
+   L'indice `https://claude.com/blog` risponde ancora 200, ma gli `href` dei post
+   puntano a `https://claude.dev/blog/<slug>`:
+
+   | Percorso | Esito (12/10/2026) |
+   | --- | --- |
+   | `claude.com/blog` (indice) | 200, utile solo per scoprire gli slug |
+   | `claude.com/blog/<slug>` | **404** — i vecchi URL non servono piu' i post |
+   | `claude.dev/blog/<slug>` via `urllib` | **403 Tunnel connection failed** |
+   | `claude.dev/...` via `WebFetch` | `getaddrinfo ENOTFOUND claude.dev` |
+
+   Quindi la procedura "indice + GET per slug" descritta sotto **non funziona piu'**:
+   resta valida solo per scoprire gli slug. Finche' `claude.dev` e' bloccato il
+   ripiego e' `WebSearch` sullo slug per ricavare la data, dicendo in fondo alla mail
+   che la copertura del blog e' parziale. Il 12/10 l'unico slug nuovo e rilevante
+   (`getting-started-with-claude-code-mods`) e' risultato del **1 ottobre**, fuori
+   finestra: nessuna voce persa, ma va riverificato ogni settimana.
+
+   Storia precedente (quando i post stavano su `claude.com`): si leggevano
+   direttamente, senza bisogno di `WebSearch`. `WebFetch` funziona
    sui singoli post. L'indice `https://claude.com/blog` va preso con `urllib` e
    parsato: le date sono in chiaro nel formato `August 20, 2026`, vicine
    all'`href` del post.
@@ -275,6 +313,11 @@ questo repo esiste per prevenire.
    **strutturalmente non contribuente** e non spenderci piu' di una sonda:
    controllarla in un colpo, annotarlo in fondo alla mail, e prendere tutta la
    sostanza dal changelog grezzo.
+   Il 12/10/2026 (ISO week 42) l'indice era **ancora fermo a `2026-w37`**, con
+   `2026-w40`, `2026-w41` e `2026-w42` tutte a 404: ottava esecuzione consecutiva
+   senza contributo. L'indice ora elenca anche le settimane vecchie (da w13 a w37,
+   senza w31), ma nulla dopo w37. La sonda singola e la nota in fondo alla mail
+   restano il trattamento giusto.
    Morale invariata: la pagina della settimana corrente non c'e' quasi mai.
    Controllarla, ma ricavare la sostanza dal changelog grezzo, che e' completo e
    datato.
