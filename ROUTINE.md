@@ -29,7 +29,13 @@ ma non pusha il ledger, la settimana dopo le riproporrà.
 Nota su `check_sources.py`: ogni fonte ha nella tabella `SOURCES` un flag
 `expected` che è la **baseline documentata qui**. Dal 14/09/2026 tutte e sei
 sono a `True`, perché tutte risultano raggiungibili (riconfermato il 28/09/2026,
-il 05/10/2026 e il 12/10/2026: sei OK su sei, nessuna sorpresa).
+il 05/10/2026, il 12/10/2026 e il 19/10/2026: sei OK su sei, nessuna sorpresa).
+
+**Il falso OK sul blog, con una correzione (19/10/2026).** La regola "i post sono
+su `claude.dev` e `claude.com/blog/<slug>` da' 404" vale per i post **nuovi**, non
+per tutti: il 19/10 `https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more`
+ha risposto **200** via `urllib`. Quindi i post vecchi restano leggibili su
+`claude.com` e un link a uno di quelli non e' rotto: va solo verificato con una GET.
 
 **Attenzione al falso OK sul blog (12/10/2026).** La sonda del blog interroga
 `https://claude.com/blog`, che risponde 200 e continua a servire l'indice, ma i
@@ -75,7 +81,13 @@ controllata a ogni esecuzione, **a prescindere dal ranking di ricerca**.
 - `mattpocock/skills` — skill di Matt Pocock (grill-with-docs, tdd, to-spec, handoff…)
 - `obra/superpowers`
 - `anthropics/claude-code`
-- `hesreallyhim/awesome-claude-code` — anche come fonte, vedi sotto
+- `hesreallyhim/awesome-claude-code` — anche come fonte, vedi sotto.
+  `search_commits` su questo repo è una buona sonda per le novità di
+  *tassonomia* dell'ecosistema, non solo per le singole risorse: il 18/10/2026
+  è nata la categoria **Mods** (PR #3184) e "Open Source Software" è stata
+  rinominata "Open Source Contribution & Maintenance" (#3187). Filtrare via il
+  rumore dei commit `github-actions[bot]` (`chore: update repo ticker data`,
+  `chore: regenerate README`), che sono la maggioranza.
 
 Aggiungere qui qualsiasi autore/repo che si voglia non perdere.
 
@@ -137,6 +149,13 @@ voci, quasi tutte del blocco `skill` del 06-08/07/2026. L'elenco totale letto da
 l'esaurimento, a cadenza invariata. Il 12/10/2026 undici candidati arretrati sono
 stati verificati con una GET: **tutti 200**, quindi il problema dei `skill-changelog`
 che danno 404 resta circoscritto a quelle voci.
+Il 19/10/2026 l'ultimo post era **ancora quello del 17/08**: **nona** settimana
+consecutiva. Cinque candidati arretrati verificati con una GET, **tutti 200**:
+`skills-codebase-design`, `skills-code-review`, `skills-domain-modeling`,
+`skills-improve-codebase-architecture`, `skills-resolving-merge-conflicts`.
+Mandati `codebase-design` e `domain-modeling`; il ledger e' a 18 voci, quindi
+restano circa una dozzina di arretrati pertinenti (l'elenco totale e' sempre 37)
+e l'esaurimento va previsto fra circa cinque esecuzioni.
 
 Attenzione sulle URL dei `skill-changelog`: non tutti usano la URL piatta. Il
 21/09/2026 `skills-changelog-v12-wait-what-writing-for-agents-claude-code-plugin-and-more`
@@ -173,12 +192,27 @@ finestra, con sostanza vera: fix a `teach` (scriveva i corsi dentro
 dal marketplace `claude-plugins-official`, e una skill nuova in cantiere
 (`chief-of-staff`). **Non fidarsi mai del solo script per questo repo.**
 
+Il 19/10/2026 il doppio controllo e' stato **negativo da entrambe le parti**:
+`track_mp_skills.py` dava ancora 1.3.1 e `search_commits` con
+`repo:mattpocock/skills committer-date:>2026-10-12` restituiva `total_count: 0`.
+In quel caso la voce si omette davvero (come il 28/09). Idem per
+`repo:obra/superpowers`: zero commit in finestra.
+
 ## Prima di tutto: il branch con cui parte il container
 
-**Verificato il 05/10/2026, riconfermato il 12/10/2026 — leggere prima di concludere
-che il repo è vuoto.** Il 12/10 il container è partito su
-`claude/sleepy-curie-u9hdup`, di nuovo con solo `README.md`: stessa situazione,
-stessa contromisura, e lo stato era intatto su `claude/blissful-ptolemy-zkpqg5`.
+**Verificato il 05/10/2026, riconfermato il 12/10/2026 e il 19/10/2026 — leggere
+prima di concludere che il repo è vuoto.** Il 12/10 il container è partito su
+`claude/sleepy-curie-u9hdup` e il 19/10 su `claude/sleepy-curie-iy548q`, ogni volta
+con solo `README.md`: stessa situazione, stessa contromisura, e lo stato era
+intatto su `claude/blissful-ptolemy-zkpqg5`. A questo punto è il caso **normale**:
+il primo comando dell'esecuzione è il `fetch` + `checkout -B` qui sotto.
+
+**Attenzione a un branch fratello con stato vecchio.** Il 19/10 `git fetch --prune`
+ha portato anche `claude/sleepy-curie-7dsddi`, che contiene uno scaffolding
+**completo ma fermo al 28/09/2026** (gli manca cioè la memoria di tre esecuzioni).
+Non è il branch buono: la discriminante è il `git log`, dove
+`claude/blissful-ptolemy-zkpqg5` ha il commit più recente. Pushare su quell'altro
+forkerebbe la memoria.
 
 Il container della routine **non** parte necessariamente sul branch che contiene
 lo stato. Il 05/10/2026 la sessione è partita con un working tree su
@@ -222,6 +256,17 @@ questo repo esiste per prevenire.
    | `claude.dev/blog/<slug>` via `urllib` | **403 Tunnel connection failed** |
    | `claude.dev/...` via `WebFetch` | `getaddrinfo ENOTFOUND claude.dev` |
 
+   **19/10/2026 — l'indice espone pochissimo.** Cercare `href="/blog/<slug>"` sull'indice
+   restituisce ora **zero** slug: gli unici link ai post sono assoluti verso
+   `https://claude.dev/blog/<slug>/` e sono soltanto **tre** card "Developer blog"
+   (`solving-code-review-at-anthropic`, `building-effective-agent-automations`,
+   `automating-eval-design-and-hillclimbing`). Regex da usare:
+   `r'https://claude\.dev/blog/([a-z0-9\-]+)/?'`. `WebSearch` sullo slug **non**
+   ha dato la data per nessuno dei tre (restituisce post omonimi diversi), quindi
+   la finestra di 7 giorni non e' applicabile e le voci si omettono, dicendolo in
+   fondo alla mail. Finche' `claude.dev` resta bloccato questa fonte e' di fatto
+   **non contribuente**, come `whats-new`.
+
    Quindi la procedura "indice + GET per slug" descritta sotto **non funziona piu'**:
    resta valida solo per scoprire gli slug. Finche' `claude.dev` e' bloccato il
    ripiego e' `WebSearch` sullo slug per ricavare la data, dicendo in fondo alla mail
@@ -257,6 +302,12 @@ questo repo esiste per prevenire.
    - novità della settimana in un repo della watchlist:
      `search_commits` con `repo:owner/name committer-date:>AAAA-MM-GG`
    - repo nuovi: `search_repositories` con `created:>AAAA-MM-GG`, `sort=stars`
+
+   Nota pratica (19/10/2026): `search_repositories` con `minimal_output=false`
+   restituisce ~112 KB e **sfonda il limite di token** del tool, costringendo a
+   rileggere il risultato da file. Usare sempre `minimal_output=true` e
+   `perPage` ≤ 20; i campi che servono (`stargazers_count`, `created_at`,
+   `description`, `topics`) ci sono comunque.
 3. **`github.com` in HTML è bloccato** (HTTP 403), incluse le pagine
    `/releases`, `/commits` e i feed `.atom`. `raw.githubusercontent.com`
    funziona: usarlo per i file grezzi (CHANGELOG, README, CSV).
@@ -318,6 +369,10 @@ questo repo esiste per prevenire.
    senza contributo. L'indice ora elenca anche le settimane vecchie (da w13 a w37,
    senza w31), ma nulla dopo w37. La sonda singola e la nota in fondo alla mail
    restano il trattamento giusto.
+   Il 19/10/2026 (ISO week 43) l'indice era **ancora fermo a `2026-w37`**, con
+   `2026-w40`, `2026-w41`, `2026-w42` e `2026-w43` tutte a 404: nona esecuzione
+   consecutiva senza contributo. Trattamento invariato: una sonda sola e la nota
+   in fondo alla mail.
    Morale invariata: la pagina della settimana corrente non c'e' quasi mai.
    Controllarla, ma ricavare la sostanza dal changelog grezzo, che e' completo e
    datato.
