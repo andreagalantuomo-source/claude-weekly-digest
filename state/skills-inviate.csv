@@ -1,0 +1,4 @@
+id,nome,url,data_invio,sezione
+agent-sh/agnix,agnix,https://github.com/agent-sh/agnix,2026-10-26,Linting
+diet103/claude-code-infrastructure-showcase,Claude Code Infrastructure Showcase,https://github.com/diet103/claude-code-infrastructure-showcase,2026-10-26,Skills
+plur-ai/plur,PLUR,https://github.com/plur-ai/plur,2026-10-26,Memory & Context Persistence
