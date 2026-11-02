@@ -29,7 +29,7 @@ ma non pusha il ledger, la settimana dopo le riproporrà.
 Nota su `check_sources.py`: ogni fonte ha nella tabella `SOURCES` un flag
 `expected` che è la **baseline documentata qui**. Dal 14/09/2026 tutte e sei
 sono a `True`, perché tutte risultano raggiungibili (riconfermato il 28/09/2026,
-il 05/10/2026, il 12/10/2026 e il 19/10/2026: sei OK su sei, nessuna sorpresa).
+il 05/10/2026, il 12/10/2026, il 19/10/2026 e il 02/11/2026: sei OK su sei, nessuna sorpresa).
 
 **Il falso OK sul blog, con una correzione (19/10/2026).** La regola "i post sono
 su `claude.dev` e `claude.com/blog/<slug>` da' 404" vale per i post **nuovi**, non
@@ -157,6 +157,20 @@ Mandati `codebase-design` e `domain-modeling`; il ledger e' a 18 voci, quindi
 restano circa una dozzina di arretrati pertinenti (l'elenco totale e' sempre 37)
 e l'esaurimento va previsto fra circa cinque esecuzioni.
 
+Il 02/11/2026 l'ultimo post era **ancora quello del 17/08**: **decima** settimana
+consecutiva. A cadenza invariata questa e' la normalita' assoluta, non una notizia:
+non vale piu' spenderci righe nella mail oltre a una frase che dice che non e' un
+blocco. Il pool fuori ledger e' stato ricalcolato per intero e **verificato con una
+GET una per una**: 18 candidati con data >= 2026-02-01, di cui **14 a 200** e 4 a
+404 — e i 4 a 404 sono *tutti* `type: skill-changelog`
+(`skills-changelog-v12-...`, `skills-changelog-v1-1-...`,
+`skills-changelog-v1-announcement`, `skills-changelog-handoff-prototype-review-and-writing`).
+Il pattern e' ormai confermato: **i `skill-changelog` danno 404 sulla URL piatta,
+gli altri `type` no.** Si possono escludere a priori senza nemmeno provarli, e il
+pool pertinente reale e' quindi 14 meno il ledger. Mandati `skills-code-review` e
+`skills-resolving-merge-conflicts`; ledger a **20** voci, restano ~12 arretrati
+buoni (l'elenco totale e' sempre 37).
+
 Attenzione sulle URL dei `skill-changelog`: non tutti usano la URL piatta. Il
 21/09/2026 `skills-changelog-v12-wait-what-writing-for-agents-claude-code-plugin-and-more`
 dava **404** su `https://www.aihero.dev/<slug>` su cinque tentativi, mentre i
@@ -192,6 +206,25 @@ finestra, con sostanza vera: fix a `teach` (scriveva i corsi dentro
 dal marketplace `claude-plugins-official`, e una skill nuova in cantiere
 (`chief-of-staff`). **Non fidarsi mai del solo script per questo repo.**
 
+Il 02/11/2026 lo script ha visto **1.3.2** (da 1.3.1) e il doppio controllo ha dato
+sostanza da **entrambe** le parti. La release: `ask-matt` legge il `SKILL.md` prima
+di riassumere una skill, `chief-of-staff` passa a una **memoria a wiki** (`index.md`
++ una pagina per argomento, ingest/query/lint) scritta come registro storico con
+ogni claim datato e ogni claim sul codice che cita il commit in cui era vero,
+`code-review` passa `CODING_STANDARDS.md`/`CONTRIBUTING.md` al subagent Standards e
+gira i subagent in foreground, `diagnosing-bugs` fase 5 fa il diff di una mutazione
+forzata contro una copia pristina. In piu' `search_commits` con
+`committer-date:>2026-10-26` ha dato **7 commit** (6 non-bot), di cui **4 non
+coperti dalla release**: `implement-spec` con un implementer subagent fresco per
+ticket (#1342), subagent che partono con un **context window nuovo invece di un
+fork** (#1341), la nuova `software-factory` (#1316) e `chief-of-staff` "shared wiki
+first" con `retro`/`implement-spec` ridotti a procedure (#1363). Versione vista ora:
+**1.3.2**. Conferma definitiva della regola del doppio controllo: su 6 commit utili,
+4 non erano nel CHANGELOG.
+`repo:obra/superpowers`: ancora **zero** commit in finestra (seconda settimana).
+Su `hesreallyhim/awesome-claude-code` i 51 commit in finestra erano **tutti**
+`github-actions[bot]`: nessuna novita' di tassonomia.
+
 Il 19/10/2026 il doppio controllo e' stato **negativo da entrambe le parti**:
 `track_mp_skills.py` dava ancora 1.3.1 e `search_commits` con
 `repo:mattpocock/skills committer-date:>2026-10-12` restituiva `total_count: 0`.
@@ -213,6 +246,35 @@ ha portato anche `claude/sleepy-curie-7dsddi`, che contiene uno scaffolding
 Non è il branch buono: la discriminante è il `git log`, dove
 `claude/blissful-ptolemy-zkpqg5` ha il commit più recente. Pushare su quell'altro
 forkerebbe la memoria.
+
+### Il guasto si è verificato davvero: il fork del 26/10/2026
+
+**Questa è la prova che il rischio non è teorico.** L'esecuzione del 26/10/2026 non
+ha trovato lo stato, **ha ignorato questa procedura e ha ricostruito lo scaffolding
+da zero** su `claude/sleepy-curie-a758cj`, un ramo che parte direttamente da
+`Initial commit`. Conseguenza misurata il 02/11: quel digest ha rimandato
+**`agnix`** e **`Claude Code Infrastructure Showcase`** (già inviate il 24/08) e i
+post aihero **`how-to-kill-the-bloat`** e **`skills-writing-for-agents`** (già
+inviati il 31/08). Su 5 voci, 4 erano duplicati. L'unica nuova era **PLUR**.
+
+Si riconosce il fork da due segni: i ledger hanno **header diversi**
+(`id,nome,url,data_invio,sezione` invece di `ID,Display Name,Link,Category,Data
+Invio,Note`) e lo stato Matt Pocock sta in `state/mp-skills-releases.json` invece
+di `state/mattpocock-skills-version.txt`. Se li vedi, sei su un ramo ricostruito,
+non sul ramo buono.
+
+Il 02/11/2026 i due rami sono stati **riuniti**: ripartendo da
+`claude/blissful-ptolemy-zkpqg5` e recuperando nel ledger canonico la sola voce
+legittima del fork (PLUR, `aa6f21d6`, con nota di provenienza). Serviva davvero:
+`pick_skills.py` stava per riproporre PLUR quella stessa settimana.
+
+**Quindi, prima di qualunque altra cosa**: fare il `fetch` + `checkout -B` qui
+sotto, e se il working tree ha solo `README.md` **non ricostruire niente** —
+cercare il ramo con il `git log` più recente fra quelli che
+`mcp__github__list_branches` elenca. Prima di scegliere le skill, controllare
+sempre che il ledger contenga le voci dell'esecuzione precedente: se l'ultima
+`Data Invio` non è di sette giorni fa, un'esecuzione è andata a vuoto e il suo
+record va recuperato dal ramo su cui è finita.
 
 Il container della routine **non** parte necessariamente sul branch che contiene
 lo stato. Il 05/10/2026 la sessione è partita con un working tree su
@@ -255,6 +317,16 @@ questo repo esiste per prevenire.
    | `claude.com/blog/<slug>` | **404** — i vecchi URL non servono piu' i post |
    | `claude.dev/blog/<slug>` via `urllib` | **403 Tunnel connection failed** |
    | `claude.dev/...` via `WebFetch` | `getaddrinfo ENOTFOUND claude.dev` |
+
+   **02/11/2026 — l'indice non espone piu' NIENTE.** La regex
+   `r'https://claude\.dev/blog/([a-z0-9\-]+)/?'` sull'indice restituisce **zero**
+   slug (il 19/10 erano tre), e anche `href="/blog/<slug>"` da' zero. `claude.dev`
+   resta irraggiungibile (`URLError` via `urllib`). La sonda di `check_sources.py`
+   continua a dare **OK** perche' interroga `claude.com/blog`, che risponde 200 e
+   serve la pagina: e' il falso OK gia' documentato, ora al suo massimo. Questa
+   fonte e' **non contribuente** e la via "indice + WebSearch sullo slug" non ha
+   nemmeno piu' uno slug da cui partire: niente da tentare, solo la nota in fondo
+   alla mail.
 
    **19/10/2026 — l'indice espone pochissimo.** Cercare `href="/blog/<slug>"` sull'indice
    restituisce ora **zero** slug: gli unici link ai post sono assoluti verso
@@ -373,6 +445,9 @@ questo repo esiste per prevenire.
    `2026-w40`, `2026-w41`, `2026-w42` e `2026-w43` tutte a 404: nona esecuzione
    consecutiva senza contributo. Trattamento invariato: una sonda sola e la nota
    in fondo alla mail.
+   Il 02/11/2026 (ISO week 45) l'indice era **ancora fermo a `2026-w37`**, con
+   `2026-w41`, `2026-w42`, `2026-w43`, `2026-w44` e `2026-w45` tutte a 404: **decima**
+   esecuzione consecutiva senza contributo. Trattamento invariato.
    Morale invariata: la pagina della settimana corrente non c'e' quasi mai.
    Controllarla, ma ricavare la sostanza dal changelog grezzo, che e' completo e
    datato.

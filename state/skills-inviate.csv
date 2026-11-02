@@ -26,3 +26,7 @@ memory-f4e6347a,roampal-core,https://github.com/roampal-ai/roampal-core,Memory &
 169ed95a,context-tax,https://github.com/gethrbr/context-tax,Observability & Monitoring,2026-10-19,
 d65c40da,Gryph,https://github.com/safedep/gryph,Security,2026-10-19,
 15353154,funes,https://github.com/huggingface/funes,Memory & Context Persistence,2026-10-19,
+aa6f21d6,PLUR,https://github.com/plur-ai/plur,Memory & Context Persistence,2026-10-26,recuperato da branch fork claude/sleepy-curie-a758cj
+11a39758,clausona,https://github.com/larcane97/clausona,Configuration,2026-11-02,
+a175874f,Claude Code Workflows,https://github.com/OneRedOak/claude-code-workflows,Agent Orchestration,2026-11-02,
+memory-bbce6158,fable,https://github.com/grooverLab/fable,Memory & Context Persistence,2026-11-02,
