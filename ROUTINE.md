@@ -29,7 +29,8 @@ ma non pusha il ledger, la settimana dopo le riproporrà.
 Nota su `check_sources.py`: ogni fonte ha nella tabella `SOURCES` un flag
 `expected` che è la **baseline documentata qui**. Dal 14/09/2026 tutte e sei
 sono a `True`, perché tutte risultano raggiungibili (riconfermato il 28/09/2026,
-il 05/10/2026, il 12/10/2026, il 19/10/2026 e il 02/11/2026: sei OK su sei, nessuna sorpresa).
+il 05/10/2026, il 12/10/2026, il 19/10/2026, il 02/11/2026 e il 09/11/2026: sei OK su sei,
+nessuna sorpresa).
 
 **Il falso OK sul blog, con una correzione (19/10/2026).** La regola "i post sono
 su `claude.dev` e `claude.com/blog/<slug>` da' 404" vale per i post **nuovi**, non
@@ -70,6 +71,40 @@ Quando però non restano candidate pertinenti, la sezione skill **si omette e
 basta**. Non riempirla con voci marginali, non ripescare dal ledger, non
 annunciare l'esaurimento ogni settimana. Se le pertinenti sono 1 o 2, se ne
 mandano 1 o 2. Lo script applica già questa regola e lo dice in output.
+
+## I tool `search_*` del server GitHub MCP possono non esserci (09/11/2026)
+
+**Novita' operativa importante.** Il 09/11/2026 la sessione e' partita con una
+nota di sistema esplicita: *«the GitHub MCP `search_*` tools are not available in
+this session»*. Quindi `search_commits` e `search_repositories` — su cui si
+appoggiano il Passo 1b e il Passo 1 — **non erano chiamabili**.
+
+Il ripiego funziona e va usato senza esitare: la CLI `gh`, che in questa sessione
+e' preconfigurata per il proxy.
+
+```bash
+gh api -X GET search/commits      -f q='repo:owner/name committer-date:>2026-11-02' -f per_page=50
+gh api -X GET search/repositories -f q='claude-code created:>2026-11-02' -f sort=stars -f order=desc -f per_page=12
+gh api -X GET search/repositories -f q='topic:claude-code pushed:>2026-11-02'       -f sort=stars -f order=desc -f per_page=12
+```
+
+Note pratiche raccolte il 09/11:
+
+- Funziona anche su repo **fuori** dallo scope della sessione: gli endpoint di
+  ricerca non sono ristretti (stessa proprieta' gia' documentata per i tool MCP).
+- `repo:owner/name` con la **grafia sbagliata** restituisce `422 Validation
+  Failed` con il messaggio «the listed users and repositories cannot be
+  searched», non un risultato vuoto. Non e' un problema di permessi: e' il repo
+  che non esiste con quel nome. Capitato su `maxritter/claude-codepro` e
+  `avifenesh/agentsys`, due candidati skill che per questo sono stati scartati.
+- Passare l'output a `python3 -c` per filtrare: il JSON grezzo e' enorme.
+  Filtrare via gli autori `github-actions[bot]` subito, come con i tool MCP.
+- **I conteggi stelle di `topic:... pushed:>` sono poco credibili.** Il 09/11 la
+  query per topic restituiva valori come `444527` e `299807` per repo nati nel
+  2026, contro cifre plausibili (`4168`, `1159`, `164`) sulle query
+  `created:>`/`repo:`. Non e' chiaro cosa conti quel campo in quella query:
+  **non citare quei numeri in mail**, usare l'ordinamento e la descrizione — che
+  e' esattamente la regola gia' valida per `WebFetch`, estesa a questo caso.
 
 ## Watchlist — repo e autori da controllare sempre
 
@@ -171,6 +206,23 @@ pool pertinente reale e' quindi 14 meno il ledger. Mandati `skills-code-review` 
 `skills-resolving-merge-conflicts`; ledger a **20** voci, restano ~12 arretrati
 buoni (l'elenco totale e' sempre 37).
 
+Il 09/11/2026 l'ultimo post era **ancora quello del 17/08**: **undicesima** settimana
+consecutiva. L'elenco totale e' sempre **37**. Applicando la regola del 02/11
+(escludere a priori `workshop` e `skill-changelog`, che danno 404 sulla URL piatta)
+il pool fuori ledger era di **12** candidati, tutti con data >= 2026-02-01; sei
+verificati con una GET, **tutti 200** — il filtro per `type` sostituisce bene la
+verifica a tappeto, ma la GET sul candidato che si manda davvero va fatta comunque.
+Mandati `skills-to-tickets` e `skills-improve-codebase-architecture`; ledger a
+**22** voci, restano **10** arretrati buoni, quindi l'esaurimento e' atteso fra
+circa **cinque** esecuzioni (fine dicembre 2026) a cadenza invariata. Dopo, la
+sezione si omette: niente ripescaggi.
+
+Criterio di scelta che ha funzionato: appaiare l'arretrato a quello che si e' gia'
+mandato, cosi' la mail puo' dire *perche'* proprio quello (`/to-tickets` dopo
+`/to-spec`, `/improve-codebase-architecture` dopo `/codebase-design`). Le descrizioni
+brevi si prendono dal `<meta name="description">` della pagina: il campo `summary`
+non c'e' nell'HTML del singolo post, solo nell'indice di `/posts`.
+
 Attenzione sulle URL dei `skill-changelog`: non tutti usano la URL piatta. Il
 21/09/2026 `skills-changelog-v12-wait-what-writing-for-agents-claude-code-plugin-and-more`
 dava **404** su `https://www.aihero.dev/<slug>` su cinque tentativi, mentre i
@@ -225,6 +277,17 @@ first" con `retro`/`implement-spec` ridotti a procedure (#1363). Versione vista 
 Su `hesreallyhim/awesome-claude-code` i 51 commit in finestra erano **tutti**
 `github-actions[bot]`: nessuna novita' di tassonomia.
 
+Il 09/11/2026 il doppio controllo e' stato di nuovo **negativo da entrambe le
+parti**: `track_mp_skills.py` dava ancora **1.3.2** e la ricerca commit (via
+`gh api search/commits`, vedi la sezione sui tool `search_*`) dava `total_count: 0`
+su `repo:mattpocock/skills committer-date:>2026-11-02`. Voce omessa.
+In compenso `repo:obra/superpowers` ha dato **1** commit dopo due settimane a zero:
+la release **v7.0.2** del 03/11 (tuning del brainstorming, fix al bootstrap
+dell'harness e agli helper SDD, compatibilita' con i plugin OpenCode V2). Sostanza
+marginale per il profilo: finita in "Altro, in breve". Su
+`hesreallyhim/awesome-claude-code` i 51 commit in finestra erano **tutti**
+`github-actions[bot]`, come il 02/11: nessuna novita' di tassonomia.
+
 Il 19/10/2026 il doppio controllo e' stato **negativo da entrambe le parti**:
 `track_mp_skills.py` dava ancora 1.3.1 e `search_commits` con
 `repo:mattpocock/skills committer-date:>2026-10-12` restituiva `total_count: 0`.
@@ -233,8 +296,8 @@ In quel caso la voce si omette davvero (come il 28/09). Idem per
 
 ## Prima di tutto: il branch con cui parte il container
 
-**Verificato il 05/10/2026, riconfermato il 12/10/2026 e il 19/10/2026 — leggere
-prima di concludere che il repo è vuoto.** Il 12/10 il container è partito su
+**Verificato il 05/10/2026, riconfermato il 12/10/2026, il 19/10/2026 e il
+09/11/2026 — leggere prima di concludere che il repo è vuoto.** Il 12/10 il container è partito su
 `claude/sleepy-curie-u9hdup` e il 19/10 su `claude/sleepy-curie-iy548q`, ogni volta
 con solo `README.md`: stessa situazione, stessa contromisura, e lo stato era
 intatto su `claude/blissful-ptolemy-zkpqg5`. A questo punto è il caso **normale**:
@@ -291,6 +354,32 @@ git fetch origin claude/blissful-ptolemy-zkpqg5
 git checkout -B claude/blissful-ptolemy-zkpqg5 origin/claude/blissful-ptolemy-zkpqg5
 ```
 
+### 09/11/2026 — procedura applicata, e il vincolo sul branch designato
+
+Il container e' partito su `claude/sleepy-curie-uon05v` con **solo `README.md`**,
+esattamente come documentato. Due cose utili per la prossima volta:
+
+1. **`git ls-remote --heads origin` basta e costa meno** di
+   `mcp__github__list_branches`: elenca tutti i branch veri con il loro SHA, e si
+   vede subito quali condividono lo stesso commit. Il 09/11 ha mostrato
+   `claude/blissful-ptolemy-zkpqg5` e `claude/sleepy-curie-2ov84j` sullo **stesso**
+   SHA (`2d8fa24`), cioe' la riunificazione del 02/11 era stata pushata su entrambi.
+2. **Il branch designato era un discendente, non un fork.** `3cd3f37` (Initial
+   commit, su cui parte il branch designato) e' antenato di `2d8fa24`, quindi
+   `git merge --ff-only 2d8fa24` ha portato lo stato **in fast-forward**, senza
+   merge e senza force. E' la mossa giusta quando il branch designato dalla
+   sessione e' ancora vergine.
+
+**Il conflitto fra "branch designato" e "branch della memoria", e come si risolve.**
+Le istruzioni di sistema della sessione impongono di sviluppare e pushare su un
+branch designato (`claude/sleepy-curie-*`, diverso a ogni esecuzione); il prompt
+della routine impone `claude/blissful-ptolemy-zkpqg5`. Non e' una scelta fra i due:
+si pusha lo **stesso commit su entrambi**. Cosi' la memoria canonica resta dove la
+routine la cerca e il vincolo della sessione e' rispettato, senza forkare niente —
+i due riferimenti puntano allo stesso oggetto. E' quello che e' stato fatto il
+09/11. **Non** scegliere solo il branch designato: la settimana dopo la memoria
+sarebbe su un ramo che nessuno cerca, ed e' il guasto del 26/10.
+
 `mcp__github__list_branches` sul repo elenca i branch veri e serve per
 riconoscere la situazione. **Non ricostruire lo scaffolding da zero** e **non
 pushare lo stato su un branch diverso**: forkerebbe la memoria e la settimana
@@ -321,7 +410,11 @@ questo repo esiste per prevenire.
    **02/11/2026 — l'indice non espone piu' NIENTE.** La regex
    `r'https://claude\.dev/blog/([a-z0-9\-]+)/?'` sull'indice restituisce **zero**
    slug (il 19/10 erano tre), e anche `href="/blog/<slug>"` da' zero. `claude.dev`
-   resta irraggiungibile (`URLError` via `urllib`). La sonda di `check_sources.py`
+   resta irraggiungibile (`URLError` via `urllib`). **Riconfermato il 09/11/2026**:
+   zero slug da entrambe le regex, e `claude.dev` da' `Tunnel connection failed:
+   403 Forbidden`. Due esecuzioni di fila con l'indice completamente muto: la
+   fonte e' da considerare **morta**, non parziale, finche' non cambia qualcosa.
+   La sonda di `check_sources.py`
    continua a dare **OK** perche' interroga `claude.com/blog`, che risponde 200 e
    serve la pagina: e' il falso OK gia' documentato, ora al suo massimo. Questa
    fonte e' **non contribuente** e la via "indice + WebSearch sullo slug" non ha
@@ -448,6 +541,11 @@ questo repo esiste per prevenire.
    Il 02/11/2026 (ISO week 45) l'indice era **ancora fermo a `2026-w37`**, con
    `2026-w41`, `2026-w42`, `2026-w43`, `2026-w44` e `2026-w45` tutte a 404: **decima**
    esecuzione consecutiva senza contributo. Trattamento invariato.
+   Il 09/11/2026 (ISO week 46) idem: indice **sempre a `2026-w37`** (elenca w13-w37
+   senza w31), e `2026-w42`...`2026-w46` tutte a 404. **Undicesima** esecuzione
+   consecutiva senza contributo. Undici settimane sono una prova sufficiente: non
+   vale piu' nemmeno scrivere in mail *perche'* non contribuisce, basta la riga di
+   copertura parziale.
    Morale invariata: la pagina della settimana corrente non c'e' quasi mai.
    Controllarla, ma ricavare la sostanza dal changelog grezzo, che e' completo e
    datato.
