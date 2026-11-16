@@ -33,3 +33,6 @@ memory-bbce6158,fable,https://github.com/grooverLab/fable,Memory & Context Persi
 34f807b9,Harness,https://github.com/revfactory/harness,Agent Orchestration,2026-11-09,
 obs-b2349e06,Claude Code Agent Monitor,https://github.com/hoangsonww/Claude-Code-Agent-Monitor,Observability & Monitoring,2026-11-09,
 skill-64ab28b2,fable-mode,https://github.com/mrtooher/fable-mode,Skills,2026-11-09,
+design-5413a10c,Dev Browser,https://github.com/SawyerHood/dev-browser,Design & UI/UX,2026-11-16,
+docs-bb02117c,Librarian,https://github.com/ngmeyer/librarian-mcp,"Documentation, Knowledge & Learning",2026-11-16,
+security-5baab2f2,Agent Guard,https://github.com/JeongJaeSoon/agent-guard,Security,2026-11-16,

@@ -29,7 +29,8 @@ ma non pusha il ledger, la settimana dopo le riproporrà.
 Nota su `check_sources.py`: ogni fonte ha nella tabella `SOURCES` un flag
 `expected` che è la **baseline documentata qui**. Dal 14/09/2026 tutte e sei
 sono a `True`, perché tutte risultano raggiungibili (riconfermato il 28/09/2026,
-il 05/10/2026, il 12/10/2026, il 19/10/2026, il 02/11/2026 e il 09/11/2026: sei OK su sei,
+il 05/10/2026, il 12/10/2026, il 19/10/2026, il 02/11/2026, il 09/11/2026 e il 16/11/2026: sei OK su
+sei,
 nessuna sorpresa).
 
 **Il falso OK sul blog, con una correzione (19/10/2026).** La regola "i post sono
@@ -97,8 +98,23 @@ Note pratiche raccolte il 09/11:
   searched», non un risultato vuoto. Non e' un problema di permessi: e' il repo
   che non esiste con quel nome. Capitato su `maxritter/claude-codepro` e
   `avifenesh/agentsys`, due candidati skill che per questo sono stati scartati.
+  **Ricapitato il 16/11/2026** su `kenryu42/claude-code-safety-net`, che era gia'
+  stato scelto come terza skill: scartato e sostituito con `JeongJaeSoon/agent-guard`.
+  Morale operativa: **verificare con `repo:` i candidati skill PRIMA di scrivere la
+  mail**, non dopo — il CSV di awesome-claude-code contiene voci il cui repo non
+  esiste piu', e `Active: TRUE` / `Stale: FALSE` nel CSV non lo rilevano.
 - Passare l'output a `python3 -c` per filtrare: il JSON grezzo e' enorme.
   Filtrare via gli autori `github-actions[bot]` subito, come con i tool MCP.
+- **16/11/2026 — i conteggi stelle sbagliati NON sono solo quelli di `topic:`.**
+  Anche `gh api search/repositories -f q='repo:owner/name'` li restituisce falsi:
+  il 16/11 dava `303968` per `affaan-m/ECC`, `148561` per `Graphify-Labs/graphify`,
+  `141736` per `garrytan/gstack`, `120527` per `JuliusBrussee/caveman` e `118035`
+  per `addyosmani/agent-skills` — tutti valori da top-50 di GitHub, per repo che
+  non lo sono. Nella stessa sessione la query `created:>` dava invece cifre
+  plausibili (365, 362, 345...) e le `repo:` su repo piccoli pure (13, 30, 72, 205,
+  6733). Non c'e' un percorso affidabile: **la regola pratica e' non citare nessun
+  conteggio stelle in mail**, dirlo in fondo alla mail e descrivere i repo invece
+  di quantificarli. E' quello che e' stato fatto il 16/11.
 - **I conteggi stelle di `topic:... pushed:>` sono poco credibili.** Il 09/11 la
   query per topic restituiva valori come `444527` e `299807` per repo nati nel
   2026, contro cifre plausibili (`4168`, `1159`, `164`) sulle query
@@ -217,9 +233,23 @@ Mandati `skills-to-tickets` e `skills-improve-codebase-architecture`; ledger a
 circa **cinque** esecuzioni (fine dicembre 2026) a cadenza invariata. Dopo, la
 sezione si omette: niente ripescaggi.
 
+Il 16/11/2026 l'ultimo post era **ancora quello del 17/08**: **dodicesima** settimana
+consecutiva, elenco totale sempre **37**. Applicando il filtro per `type` (via
+`workshop` e `skill-changelog`) il pool fuori ledger era di **10** candidati, tutti
+con data >= 2026-02-01; cinque verificati con una GET, **tutti 200**. Mandati
+`skills-setup-matt-pocock-skills` e `skills-triage`; ledger a **24** voci, restano
+**8** arretrati buoni, quindi l'esaurimento e' atteso fra circa **quattro**
+esecuzioni (meta' dicembre 2026) a cadenza invariata. Dopo, la sezione si omette.
+In mail la cadenza e' stata liquidata in mezza frase, come stabilito il 02/11.
+
 Criterio di scelta che ha funzionato: appaiare l'arretrato a quello che si e' gia'
 mandato, cosi' la mail puo' dire *perche'* proprio quello (`/to-tickets` dopo
-`/to-spec`, `/improve-codebase-architecture` dopo `/codebase-design`). Le descrizioni
+`/to-spec`, `/improve-codebase-architecture` dopo `/codebase-design`, e il 16/11
+`/triage` *prima* di `/to-tickets` — la catena a monte, non a valle). Il 16/11 ha
+funzionato anche una seconda angolatura: **mandare il prerequisito** invece di
+un'altra skill di pari livello. `/setup-matt-pocock-skills` configura il repo perche'
+tutte le altre funzionino, quindi dopo una dozzina di skill singole gia' inviate e'
+l'arretrato che rende utile retroattivamente tutto il resto. Le descrizioni
 brevi si prendono dal `<meta name="description">` della pagina: il campo `summary`
 non c'e' nell'HTML del singolo post, solo nell'indice di `/posts`.
 
@@ -287,6 +317,17 @@ dell'harness e agli helper SDD, compatibilita' con i plugin OpenCode V2). Sostan
 marginale per il profilo: finita in "Altro, in breve". Su
 `hesreallyhim/awesome-claude-code` i 51 commit in finestra erano **tutti**
 `github-actions[bot]`, come il 02/11: nessuna novita' di tassonomia.
+
+Il 16/11/2026 `track_mp_skills.py` dava ancora **1.3.2** (nessun `--record` fatto,
+niente da registrare), ma il doppio controllo via `gh api search/commits` su
+`repo:mattpocock/skills committer-date:>2026-11-09` ha dato **2** commit: la PR
+**#1416**, una limatura di dizionario su `software-factory` («"job" e' la parola del
+vendor CI; `explore` lascia i findings»). Sostanza minima ma non nulla: finita in una
+mezza frase nella sezione Matt Pocock, non in una voce propria. Terza conferma della
+regola: **lo script da solo avrebbe detto "niente".**
+`repo:obra/superpowers`: **zero** commit in finestra. Su
+`hesreallyhim/awesome-claude-code` i 50 commit in finestra erano **tutti**
+`github-actions[bot]`: nessuna novita' di tassonomia (come il 02/11 e il 09/11).
 
 Il 19/10/2026 il doppio controllo e' stato **negativo da entrambe le parti**:
 `track_mp_skills.py` dava ancora 1.3.1 e `search_commits` con
@@ -370,6 +411,18 @@ esattamente come documentato. Due cose utili per la prossima volta:
    merge e senza force. E' la mossa giusta quando il branch designato dalla
    sessione e' ancora vergine.
 
+### 16/11/2026 — stessa procedura, caso piu' semplice di tutti
+
+Il container e' partito su `claude/sleepy-curie-2230ih` con **solo `README.md`**, con
+`main` fermo a `Initial commit`: il caso normale, per la quinta volta documentata.
+`git fetch origin 'refs/heads/*:refs/remotes/origin/*' --prune` in un colpo ha portato
+tutti i rami (sei, piu' `main`) e il `git log` ha mostrato subito il ramo buono
+(`claude/blissful-ptolemy-zkpqg5`, commit `67de414` del 09/11). Lo scaffolding era
+intatto e i ledger contenevano le voci del 09/11, quindi nessun recupero da fare.
+Un `checkout -B` sul ramo remoto e via. Nota: fare il fetch con il refspec completo
+e' meglio che `git fetch origin <branch>`, perche' fa vedere in un colpo *tutti* i
+rami fratelli e quindi quale ha il log piu' recente.
+
 **Il conflitto fra "branch designato" e "branch della memoria", e come si risolve.**
 Le istruzioni di sistema della sessione impongono di sviluppare e pushare su un
 branch designato (`claude/sleepy-curie-*`, diverso a ogni esecuzione); il prompt
@@ -414,6 +467,10 @@ questo repo esiste per prevenire.
    zero slug da entrambe le regex, e `claude.dev` da' `Tunnel connection failed:
    403 Forbidden`. Due esecuzioni di fila con l'indice completamente muto: la
    fonte e' da considerare **morta**, non parziale, finche' non cambia qualcosa.
+   **Terza conferma il 16/11/2026**: `claude.com/blog` risponde 200 e serve 570 KB,
+   ma **zero** slug da entrambe le regex, e `claude.dev/blog` da' ancora
+   `Tunnel connection failed: 403 Forbidden`. Tre esecuzioni di fila: non vale piu'
+   spenderci piu' di una sonda, basta la riga di copertura parziale.
    La sonda di `check_sources.py`
    continua a dare **OK** perche' interroga `claude.com/blog`, che risponde 200 e
    serve la pagina: e' il falso OK gia' documentato, ora al suo massimo. Questa
@@ -546,6 +603,10 @@ questo repo esiste per prevenire.
    consecutiva senza contributo. Undici settimane sono una prova sufficiente: non
    vale piu' nemmeno scrivere in mail *perche'* non contribuisce, basta la riga di
    copertura parziale.
+   Il 16/11/2026 (ISO week 47) idem: indice **sempre a `2026-w37`** (24 settimane
+   elencate, da w13 a w37 senza w31), e `2026-w43`...`2026-w47` tutte a 404.
+   **Dodicesima** esecuzione consecutiva senza contributo. Trattamento invariato:
+   una sonda sola e una riga di copertura parziale in fondo alla mail.
    Morale invariata: la pagina della settimana corrente non c'e' quasi mai.
    Controllarla, ma ricavare la sostanza dal changelog grezzo, che e' completo e
    datato.
