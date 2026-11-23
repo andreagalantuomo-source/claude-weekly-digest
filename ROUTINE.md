@@ -29,9 +29,8 @@ ma non pusha il ledger, la settimana dopo le riproporrà.
 Nota su `check_sources.py`: ogni fonte ha nella tabella `SOURCES` un flag
 `expected` che è la **baseline documentata qui**. Dal 14/09/2026 tutte e sei
 sono a `True`, perché tutte risultano raggiungibili (riconfermato il 28/09/2026,
-il 05/10/2026, il 12/10/2026, il 19/10/2026, il 02/11/2026, il 09/11/2026 e il 16/11/2026: sei OK su
-sei,
-nessuna sorpresa).
+il 05/10/2026, il 12/10/2026, il 19/10/2026, il 02/11/2026, il 09/11/2026, il 16/11/2026 e il
+23/11/2026: sei OK su sei, nessuna sorpresa).
 
 **Il falso OK sul blog, con una correzione (19/10/2026).** La regola "i post sono
 su `claude.dev` e `claude.com/blog/<slug>` da' 404" vale per i post **nuovi**, non
@@ -121,6 +120,24 @@ Note pratiche raccolte il 09/11:
   `created:>`/`repo:`. Non e' chiaro cosa conti quel campo in quella query:
   **non citare quei numeri in mail**, usare l'ordinamento e la descrizione — che
   e' esattamente la regola gia' valida per `WebFetch`, estesa a questo caso.
+
+- **23/11/2026 — i conteggi di `created:>` sembrano plausibili, ma la regola resta.**
+  La query `claude-code created:>2026-11-16` ha dato cifre credibili (2224, 518, 467,
+  400...) e la query `topic:` non e' stata nemmeno interrogata per le stelle. Non e'
+  una prova che il percorso sia affidabile: il 16/11 anche `repo:` dava cifre
+  plausibili sui repo piccoli e assurde sui grandi. **Regola invariata: nessun
+  conteggio stelle in mail**, e la riga che lo dice in fondo.
+- **Verifica dei candidati skill, 23/11**: sei candidati verificati con
+  `repo:owner/name` prima di scrivere la mail (`gowtham012/pinpoint`,
+  `automatis-tools/agents-can-communicate`, `mennanov/blockwatch`, `haabe/mycelium`,
+  `serpro69/capy`, `zircote/workflows-plugin`): **tutti e sei esistono**, nessun 422.
+  Nota: il CSV scrive `gowtham012/pinpoint` ma la grafia vera e' **`gowtham012/PinPoint`**
+  — GitHub risolve comunque, quindi il link del CSV non e' rotto.
+- **23/11/2026 — i candidati scartati per 422 restano nel pool e ritornano.**
+  `avifenesh/agentsys` e `maxritter/claude-codepro`, scartati il 09/11 perche' il repo
+  non esisteva con quella grafia, erano **di nuovo** in cima al ranking di
+  `pick_skills.py` (score 21 e 19). Lo script non sa del 422. Conviene ricordarselo e
+  non riverificarli ogni settimana: se un repo ha dato 422 una volta, si salta.
 
 ## Watchlist — repo e autori da controllare sempre
 
@@ -242,6 +259,27 @@ con data >= 2026-02-01; cinque verificati con una GET, **tutti 200**. Mandati
 esecuzioni (meta' dicembre 2026) a cadenza invariata. Dopo, la sezione si omette.
 In mail la cadenza e' stata liquidata in mezza frase, come stabilito il 02/11.
 
+Il 23/11/2026 **la siccita' e' finita**: l'indice espone un post nuovo del **18/11**,
+`watch-me-ship-a-21-000-line-feature-with-mattpocock-skills~ez95n` (type `article`,
+URL piatta, 200), il primo dopo **tredici** settimane. Attenzione a due cose:
+
+1. **Lo slug puo' contenere un suffisso `~xxxxx`** (qui `~ez95n`). La URL piatta
+   funziona solo con il suffisso: va preso dall'indice tale e quale, non ricostruito
+   dal titolo.
+2. **L'indice puo' far comparire post con data retroattiva.** `the-home-repo-pattern`
+   ha data **12/11**, cioe' sarebbe stato in finestra il 16/11, ma quella settimana
+   l'indice non lo mostrava (l'ultimo era ancora il 17/08). Morale: un post con data
+   appena fuori finestra, assente dal ledger, va trattato come **arretrato di
+   recupero**, non scartato perche' "vecchio di undici giorni" — altrimenti si perde.
+   Fatto cosi' il 23/11.
+
+Elenco totale sempre **37** voci (il post nuovo entra, uno vecchio esce dalla finestra
+dell'indice). Mandati: il post della settimana piu' `the-home-repo-pattern` e
+`skills-implement-spec` come recuperi; ledger a **27** voci, restano **6** arretrati
+buoni dopo il filtro per `type`, quindi l'esaurimento e' atteso fra circa **tre**
+esecuzioni (meta' dicembre 2026) — salvo che la ripresa della pubblicazione lo
+rimandi.
+
 Criterio di scelta che ha funzionato: appaiare l'arretrato a quello che si e' gia'
 mandato, cosi' la mail puo' dire *perche'* proprio quello (`/to-tickets` dopo
 `/to-spec`, `/improve-codebase-architecture` dopo `/codebase-design`, e il 16/11
@@ -328,6 +366,19 @@ regola: **lo script da solo avrebbe detto "niente".**
 `repo:obra/superpowers`: **zero** commit in finestra. Su
 `hesreallyhim/awesome-claude-code` i 50 commit in finestra erano **tutti**
 `github-actions[bot]`: nessuna novita' di tassonomia (come il 02/11 e il 09/11).
+
+Il 23/11/2026 `track_mp_skills.py` dava ancora **1.3.2** (niente da registrare), ma
+`gh api search/commits` su `repo:mattpocock/skills committer-date:>2026-11-16` ha dato
+**4** commit (2 non-merge): la description del frontmatter di `software-factory` messa
+fra apici per i parser YAML severi (PR #1453) e un **controllo in CI che valida il
+frontmatter di ogni `SKILL.md` con lo stesso parser dell'installer** (PR #1455).
+Sostanza piccola ma citabile, finita in una riga della sezione Matt Pocock. Quarta
+conferma della regola del doppio controllo. `repo:obra/superpowers`: **zero** commit in
+finestra (anche il 16/11 era zero). Su `hesreallyhim/awesome-claude-code` i 50 commit in
+finestra erano **tutti** `github-actions[bot]`: nessuna novita' di tassonomia, come nelle
+quattro esecuzioni precedenti. Su `anthropics/claude-code` i 74 commit in finestra sono
+quasi tutti `actions-user` con messaggio `chore: Update mods/`: rumore, ma indica che i
+mod built-in vengono aggiornati di continuo (questa settimana e' uscito `easel`).
 
 Il 19/10/2026 il doppio controllo e' stato **negativo da entrambe le parti**:
 `track_mp_skills.py` dava ancora 1.3.1 e `search_commits` con
@@ -423,6 +474,19 @@ Un `checkout -B` sul ramo remoto e via. Nota: fare il fetch con il refspec compl
 e' meglio che `git fetch origin <branch>`, perche' fa vedere in un colpo *tutti* i
 rami fratelli e quindi quale ha il log piu' recente.
 
+### 23/11/2026 — sesta volta, e un dettaglio nuovo sul fetch
+
+Il container e' partito su `claude/sleepy-curie-dp2clr` con **solo `README.md`** e `main`
+fermo a `Initial commit`: il caso normale, sesta volta documentata. Due note:
+
+- `git fetch origin --prune` **senza refspec** ha portato comunque tutti i rami fratelli
+  (cinque `claude/sleepy-curie-*` nuovi), quindi il refspec completo del 16/11 non e'
+  indispensabile; quello che conta davvero e' `git ls-remote --heads origin`, che ha
+  mostrato subito `claude/blissful-ptolemy-zkpqg5` e `claude/sleepy-curie-2230ih` sullo
+  **stesso** SHA (`93c2b87`) — cioe' il doppio push del 16/11 aveva funzionato.
+- I ledger contenevano le voci del 16/11 (ultima `Data Invio` esattamente di sette giorni
+  prima): nessun recupero da fare, nessuna esecuzione andata a vuoto.
+
 **Il conflitto fra "branch designato" e "branch della memoria", e come si risolve.**
 Le istruzioni di sistema della sessione impongono di sviluppare e pushare su un
 branch designato (`claude/sleepy-curie-*`, diverso a ogni esecuzione); il prompt
@@ -477,6 +541,48 @@ questo repo esiste per prevenire.
    fonte e' **non contribuente** e la via "indice + WebSearch sullo slug" non ha
    nemmeno piu' uno slug da cui partire: niente da tentare, solo la nota in fondo
    alla mail.
+
+   **23/11/2026 — IL BLOG E' TORNATO UTILIZZABILE, e serve un percorso nuovo.**
+   Dopo tre settimane di indice completamente muto, `claude.com/blog` espone di nuovo
+   contenuto. Ma **non** nel modo documentato sopra: la regex sugli `href` da' solo
+   **2** slug, mentre nell'HTML ci sono **13 occorrenze di data** con il titolo
+   accanto. Il percorso che funziona e' **associare ogni data al testo che la
+   precede**, non cercare gli `href`:
+
+   ```python
+   h = urllib.request.urlopen(...("https://claude.com/blog")).read().decode()
+   for m in re.finditer(r'[A-Z][a-z]{2,8} \d{1,2}, 2026', h):
+       seg = h[max(0,m.start()-1500):m.start()+600]
+       titolo = re.findall(r'>([A-Z][^<>{}]{18,120})<', seg)[-1]   # il piu' vicino
+   ```
+
+   Il 23/11 ha restituito 12 post datati fra il 10/11 e il 17/11, con i titoli
+   corretti e **date affidabili** (verificate incrociando due fonti secondarie sui
+   due post in finestra). Due erano in finestra e pertinenti al profilo:
+   *How the Claude Code team thinks about verification* (16/11) e *Using a "chaos
+   loop" to harden the Claude Docs launch* (17/11); gli altri erano billing,
+   Claude Meetings, Manufacturing, J. Crew — da scartare.
+
+   **Quello che resta rotto: leggere il post.** I link puntano a
+   `claude.dev/blog/<slug>`, che da' ancora `Tunnel connection failed: 403`, e
+   `claude.com/blog/<slug>` da' 404 **per i post nuovi**. Per i post vecchi invece
+   risponde 200: il 23/11
+   `claude.com/blog/building-verification-loops-in-claude-code-with-skills` era
+   leggibile. Quindi la regola del 19/10 ("i post vecchi restano su claude.com")
+   vale ancora e torna utile come link di sfondo.
+
+   **Procedura da ora:** prendere titoli e date dall'indice col metodo
+   data-vicino-al-titolo, filtrare sul profilo, e per il *contenuto* ripiegare su
+   `WebSearch` sul titolo. Il 23/11 `WebSearch` sui due titoli ha dato riassunti
+   di terze parti utilizzabili **e** la data (16/11 e 17/11), confermando quella
+   dell'indice. In mail: linkare la URL canonica `claude.dev/blog/<slug>` — all'utente
+   si apre — e **dire in chiaro che la pagina non e' stata letta** e che i dettagli
+   vengono dall'indice e da fonti secondarie. Non spacciare un riassunto di terze
+   parti per lettura diretta.
+   Nota: `claude.com/blog/category/<nome>` serve lo **stesso** HTML dell'indice
+   (stessa lunghezza byte per byte), quindi non aggiunge niente: e' un'app JS.
+   **Questa fonte va da "morta" a "parziale"**: il flag `expected` in
+   `check_sources.py` resta a `True` e il suo OK ora e' meno falso di prima.
 
    **19/10/2026 — l'indice espone pochissimo.** Cercare `href="/blog/<slug>"` sull'indice
    restituisce ora **zero** slug: gli unici link ai post sono assoluti verso
@@ -538,6 +644,25 @@ questo repo esiste per prevenire.
    stars" e "234.5k stars" per repo che non li hanno). **Non citare mai un
    conteggio stelle preso da `WebFetch`.** Prenderli da `search_repositories`
    (campo `stargazers_count`), che viene dall'API vera.
+4b. **Il volume del changelog puo' essere enorme: filtrare per keyword, non leggere tutto.**
+   Il 23/11/2026 la finestra conteneva **cinque** release (2.1.326...2.1.330) per **956**
+   voci totali, di cui 367 nella sola 2.1.326 — troppo per leggerle a mano e troppo per
+   stamparle tutte. Lo script che ha funzionato: estrarre i `<li>` come da punto 5 e
+   filtrare con una regex sul profilo
+   (`skill|hook|rule|MCP|connector|memory|CLAUDE\.md|routine|scheduled task|slash
+   command|plugin|marketplace|subagent|mod|brain|knowledge`), che ha ridotto 956 a **260**
+   voci pertinenti — leggibili. Il rapporto e' stabile intorno al 25-30%.
+   Secondo accorgimento: interrompere il ciclo sul **primo** blocco con data fuori
+   finestra, e in una passata separata stampare solo `versione | data | n. voci` per le
+   prime 10-12 release, cosi' si sa subito quante release copre la finestra.
+   **Terzo, importante: controllare con quale release si era chiuso il digest precedente.**
+   Il 23/11 la release 2.1.326 e' del **16/11**, cioe' lo stesso giorno dell'esecuzione
+   precedente: per sapere se era gia' stata coperta e' bastato leggere la mail del 16/11
+   via `mcp__Gmail__search_threads` + `get_message` (diceva «433 voci in quattro release»,
+   quindi si fermava a 2.1.325). **Rileggere la mail della settimana prima e' il modo
+   piu' economico di evitare i doppioni al bordo della finestra**, e serve anche a non
+   ripetere le stesse formule.
+
 5. **Il `CHANGELOG.md` grezzo non ha date, la pagina docs sì.**
    `raw.githubusercontent.com/anthropics/claude-code/main/CHANGELOG.md` elenca le
    versioni ma non quando sono uscite: da solo non permette di applicare la
@@ -607,6 +732,10 @@ questo repo esiste per prevenire.
    elencate, da w13 a w37 senza w31), e `2026-w43`...`2026-w47` tutte a 404.
    **Dodicesima** esecuzione consecutiva senza contributo. Trattamento invariato:
    una sonda sola e una riga di copertura parziale in fondo alla mail.
+   Il 23/11/2026 (ISO week 48) idem: indice **sempre a `2026-w37`** (24 settimane,
+   w13-w37 senza w31), e `2026-w44`...`2026-w48` tutte a 404. **Tredicesima**
+   esecuzione consecutiva senza contributo. Trattamento invariato: una sonda sola
+   e una riga di copertura parziale in fondo alla mail.
    Morale invariata: la pagina della settimana corrente non c'e' quasi mai.
    Controllarla, ma ricavare la sostanza dal changelog grezzo, che e' completo e
    datato.
